@@ -13,7 +13,6 @@ package figma
 import (
 	"encoding/json"
 	"fmt"
-	"gopkg.in/validator.v2"
 )
 
 // Action - An action that is performed when a trigger is activated.
@@ -81,119 +80,91 @@ func (dst *Action) UnmarshalJSON(data []byte) error {
 	var err error
 	match := 0
 	// try to unmarshal data into ActionOneOf
-	err = newStrictDecoder(data).Decode(&dst.ActionOneOf)
+	err = json.Unmarshal(data, &dst.ActionOneOf)
 	if err == nil {
 		jsonActionOneOf, _ := json.Marshal(dst.ActionOneOf)
 		if string(jsonActionOneOf) == "{}" { // empty struct
 			dst.ActionOneOf = nil
 		} else {
-			if err = validator.Validate(dst.ActionOneOf); err != nil {
-				dst.ActionOneOf = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.ActionOneOf = nil
 	}
 
 	// try to unmarshal data into ConditionalAction
-	err = newStrictDecoder(data).Decode(&dst.ConditionalAction)
+	err = json.Unmarshal(data, &dst.ConditionalAction)
 	if err == nil {
 		jsonConditionalAction, _ := json.Marshal(dst.ConditionalAction)
 		if string(jsonConditionalAction) == "{}" { // empty struct
 			dst.ConditionalAction = nil
 		} else {
-			if err = validator.Validate(dst.ConditionalAction); err != nil {
-				dst.ConditionalAction = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.ConditionalAction = nil
 	}
 
 	// try to unmarshal data into NodeAction
-	err = newStrictDecoder(data).Decode(&dst.NodeAction)
+	err = json.Unmarshal(data, &dst.NodeAction)
 	if err == nil {
 		jsonNodeAction, _ := json.Marshal(dst.NodeAction)
 		if string(jsonNodeAction) == "{}" { // empty struct
 			dst.NodeAction = nil
 		} else {
-			if err = validator.Validate(dst.NodeAction); err != nil {
-				dst.NodeAction = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.NodeAction = nil
 	}
 
 	// try to unmarshal data into OpenURLAction
-	err = newStrictDecoder(data).Decode(&dst.OpenURLAction)
+	err = json.Unmarshal(data, &dst.OpenURLAction)
 	if err == nil {
 		jsonOpenURLAction, _ := json.Marshal(dst.OpenURLAction)
 		if string(jsonOpenURLAction) == "{}" { // empty struct
 			dst.OpenURLAction = nil
 		} else {
-			if err = validator.Validate(dst.OpenURLAction); err != nil {
-				dst.OpenURLAction = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.OpenURLAction = nil
 	}
 
 	// try to unmarshal data into SetVariableAction
-	err = newStrictDecoder(data).Decode(&dst.SetVariableAction)
+	err = json.Unmarshal(data, &dst.SetVariableAction)
 	if err == nil {
 		jsonSetVariableAction, _ := json.Marshal(dst.SetVariableAction)
 		if string(jsonSetVariableAction) == "{}" { // empty struct
 			dst.SetVariableAction = nil
 		} else {
-			if err = validator.Validate(dst.SetVariableAction); err != nil {
-				dst.SetVariableAction = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.SetVariableAction = nil
 	}
 
 	// try to unmarshal data into SetVariableModeAction
-	err = newStrictDecoder(data).Decode(&dst.SetVariableModeAction)
+	err = json.Unmarshal(data, &dst.SetVariableModeAction)
 	if err == nil {
 		jsonSetVariableModeAction, _ := json.Marshal(dst.SetVariableModeAction)
 		if string(jsonSetVariableModeAction) == "{}" { // empty struct
 			dst.SetVariableModeAction = nil
 		} else {
-			if err = validator.Validate(dst.SetVariableModeAction); err != nil {
-				dst.SetVariableModeAction = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.SetVariableModeAction = nil
 	}
 
 	// try to unmarshal data into UpdateMediaRuntimeAction
-	err = newStrictDecoder(data).Decode(&dst.UpdateMediaRuntimeAction)
+	err = json.Unmarshal(data, &dst.UpdateMediaRuntimeAction)
 	if err == nil {
 		jsonUpdateMediaRuntimeAction, _ := json.Marshal(dst.UpdateMediaRuntimeAction)
 		if string(jsonUpdateMediaRuntimeAction) == "{}" { // empty struct
 			dst.UpdateMediaRuntimeAction = nil
 		} else {
-			if err = validator.Validate(dst.UpdateMediaRuntimeAction); err != nil {
-				dst.UpdateMediaRuntimeAction = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.UpdateMediaRuntimeAction = nil

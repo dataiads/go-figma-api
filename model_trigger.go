@@ -13,10 +13,9 @@ package figma
 import (
 	"encoding/json"
 	"fmt"
-	"gopkg.in/validator.v2"
 )
 
-// Trigger - The `\"ON_HOVER\"` and `\"ON_PRESS\"` trigger types revert the navigation when the trigger is finished (the result is temporary).  `\"MOUSE_ENTER\"`, `\"MOUSE_LEAVE\"`, `\"MOUSE_UP\"` and `\"MOUSE_DOWN\"` are permanent, one-way navigation. The `delay` parameter requires the trigger to be held for a certain duration of time before the action occurs. Both `timeout` and `delay` values are in milliseconds. The `\"ON_MEDIA_HIT\"` and `\"ON_MEDIA_END\"` trigger types can only trigger from a video.  They fire when a video reaches a certain time or ends. The `timestamp` value is in seconds.
+// Trigger - The `\"ON_HOVER\"` and `\"ON_PRESS\"` trigger types revert the navigation when the trigger is finished (the result is temporary). `\"MOUSE_ENTER\"`, `\"MOUSE_LEAVE\"`, `\"MOUSE_UP\"` and `\"MOUSE_DOWN\"` are permanent, one-way navigation. The `delay` parameter requires the trigger to be held for a certain duration of time before the action occurs. Both `timeout` and `delay` values are in milliseconds. The `\"ON_MEDIA_HIT\"` and `\"ON_MEDIA_END\"` trigger types can only trigger from a video. They fire when a video reaches a certain time or ends. The `timestamp` value is in seconds.
 type Trigger struct {
 	AfterTimeoutTrigger *AfterTimeoutTrigger
 	OnKeyDownTrigger    *OnKeyDownTrigger
@@ -73,102 +72,78 @@ func (dst *Trigger) UnmarshalJSON(data []byte) error {
 	var err error
 	match := 0
 	// try to unmarshal data into AfterTimeoutTrigger
-	err = newStrictDecoder(data).Decode(&dst.AfterTimeoutTrigger)
+	err = json.Unmarshal(data, &dst.AfterTimeoutTrigger)
 	if err == nil {
 		jsonAfterTimeoutTrigger, _ := json.Marshal(dst.AfterTimeoutTrigger)
 		if string(jsonAfterTimeoutTrigger) == "{}" { // empty struct
 			dst.AfterTimeoutTrigger = nil
 		} else {
-			if err = validator.Validate(dst.AfterTimeoutTrigger); err != nil {
-				dst.AfterTimeoutTrigger = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.AfterTimeoutTrigger = nil
 	}
 
 	// try to unmarshal data into OnKeyDownTrigger
-	err = newStrictDecoder(data).Decode(&dst.OnKeyDownTrigger)
+	err = json.Unmarshal(data, &dst.OnKeyDownTrigger)
 	if err == nil {
 		jsonOnKeyDownTrigger, _ := json.Marshal(dst.OnKeyDownTrigger)
 		if string(jsonOnKeyDownTrigger) == "{}" { // empty struct
 			dst.OnKeyDownTrigger = nil
 		} else {
-			if err = validator.Validate(dst.OnKeyDownTrigger); err != nil {
-				dst.OnKeyDownTrigger = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.OnKeyDownTrigger = nil
 	}
 
 	// try to unmarshal data into OnMediaHitTrigger
-	err = newStrictDecoder(data).Decode(&dst.OnMediaHitTrigger)
+	err = json.Unmarshal(data, &dst.OnMediaHitTrigger)
 	if err == nil {
 		jsonOnMediaHitTrigger, _ := json.Marshal(dst.OnMediaHitTrigger)
 		if string(jsonOnMediaHitTrigger) == "{}" { // empty struct
 			dst.OnMediaHitTrigger = nil
 		} else {
-			if err = validator.Validate(dst.OnMediaHitTrigger); err != nil {
-				dst.OnMediaHitTrigger = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.OnMediaHitTrigger = nil
 	}
 
 	// try to unmarshal data into TriggerOneOf
-	err = newStrictDecoder(data).Decode(&dst.TriggerOneOf)
+	err = json.Unmarshal(data, &dst.TriggerOneOf)
 	if err == nil {
 		jsonTriggerOneOf, _ := json.Marshal(dst.TriggerOneOf)
 		if string(jsonTriggerOneOf) == "{}" { // empty struct
 			dst.TriggerOneOf = nil
 		} else {
-			if err = validator.Validate(dst.TriggerOneOf); err != nil {
-				dst.TriggerOneOf = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.TriggerOneOf = nil
 	}
 
 	// try to unmarshal data into TriggerOneOf1
-	err = newStrictDecoder(data).Decode(&dst.TriggerOneOf1)
+	err = json.Unmarshal(data, &dst.TriggerOneOf1)
 	if err == nil {
 		jsonTriggerOneOf1, _ := json.Marshal(dst.TriggerOneOf1)
 		if string(jsonTriggerOneOf1) == "{}" { // empty struct
 			dst.TriggerOneOf1 = nil
 		} else {
-			if err = validator.Validate(dst.TriggerOneOf1); err != nil {
-				dst.TriggerOneOf1 = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.TriggerOneOf1 = nil
 	}
 
 	// try to unmarshal data into TriggerOneOf2
-	err = newStrictDecoder(data).Decode(&dst.TriggerOneOf2)
+	err = json.Unmarshal(data, &dst.TriggerOneOf2)
 	if err == nil {
 		jsonTriggerOneOf2, _ := json.Marshal(dst.TriggerOneOf2)
 		if string(jsonTriggerOneOf2) == "{}" { // empty struct
 			dst.TriggerOneOf2 = nil
 		} else {
-			if err = validator.Validate(dst.TriggerOneOf2); err != nil {
-				dst.TriggerOneOf2 = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.TriggerOneOf2 = nil

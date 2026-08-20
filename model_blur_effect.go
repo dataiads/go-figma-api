@@ -13,7 +13,6 @@ package figma
 import (
 	"encoding/json"
 	"fmt"
-	"gopkg.in/validator.v2"
 )
 
 // BlurEffect - struct for BlurEffect
@@ -41,34 +40,26 @@ func (dst *BlurEffect) UnmarshalJSON(data []byte) error {
 	var err error
 	match := 0
 	// try to unmarshal data into NormalBlurEffect
-	err = newStrictDecoder(data).Decode(&dst.NormalBlurEffect)
+	err = json.Unmarshal(data, &dst.NormalBlurEffect)
 	if err == nil {
 		jsonNormalBlurEffect, _ := json.Marshal(dst.NormalBlurEffect)
 		if string(jsonNormalBlurEffect) == "{}" { // empty struct
 			dst.NormalBlurEffect = nil
 		} else {
-			if err = validator.Validate(dst.NormalBlurEffect); err != nil {
-				dst.NormalBlurEffect = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.NormalBlurEffect = nil
 	}
 
 	// try to unmarshal data into ProgressiveBlurEffect
-	err = newStrictDecoder(data).Decode(&dst.ProgressiveBlurEffect)
+	err = json.Unmarshal(data, &dst.ProgressiveBlurEffect)
 	if err == nil {
 		jsonProgressiveBlurEffect, _ := json.Marshal(dst.ProgressiveBlurEffect)
 		if string(jsonProgressiveBlurEffect) == "{}" { // empty struct
 			dst.ProgressiveBlurEffect = nil
 		} else {
-			if err = validator.Validate(dst.ProgressiveBlurEffect); err != nil {
-				dst.ProgressiveBlurEffect = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.ProgressiveBlurEffect = nil

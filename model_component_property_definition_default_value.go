@@ -13,7 +13,6 @@ package figma
 import (
 	"encoding/json"
 	"fmt"
-	"gopkg.in/validator.v2"
 )
 
 // ComponentPropertyDefinitionDefaultValue - Initial value of this property for instances.
@@ -41,34 +40,26 @@ func (dst *ComponentPropertyDefinitionDefaultValue) UnmarshalJSON(data []byte) e
 	var err error
 	match := 0
 	// try to unmarshal data into Bool
-	err = newStrictDecoder(data).Decode(&dst.Bool)
+	err = json.Unmarshal(data, &dst.Bool)
 	if err == nil {
 		jsonBool, _ := json.Marshal(dst.Bool)
 		if string(jsonBool) == "{}" { // empty struct
 			dst.Bool = nil
 		} else {
-			if err = validator.Validate(dst.Bool); err != nil {
-				dst.Bool = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.Bool = nil
 	}
 
 	// try to unmarshal data into String
-	err = newStrictDecoder(data).Decode(&dst.String)
+	err = json.Unmarshal(data, &dst.String)
 	if err == nil {
 		jsonString, _ := json.Marshal(dst.String)
 		if string(jsonString) == "{}" { // empty struct
 			dst.String = nil
 		} else {
-			if err = validator.Validate(dst.String); err != nil {
-				dst.String = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.String = nil

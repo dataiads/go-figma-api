@@ -13,7 +13,6 @@ package figma
 import (
 	"encoding/json"
 	"fmt"
-	"gopkg.in/validator.v2"
 )
 
 // ConnectorEndpoint - Stores canvas location for a connector start/end point.
@@ -41,34 +40,26 @@ func (dst *ConnectorEndpoint) UnmarshalJSON(data []byte) error {
 	var err error
 	match := 0
 	// try to unmarshal data into ConnectorEndpointOneOf
-	err = newStrictDecoder(data).Decode(&dst.ConnectorEndpointOneOf)
+	err = json.Unmarshal(data, &dst.ConnectorEndpointOneOf)
 	if err == nil {
 		jsonConnectorEndpointOneOf, _ := json.Marshal(dst.ConnectorEndpointOneOf)
 		if string(jsonConnectorEndpointOneOf) == "{}" { // empty struct
 			dst.ConnectorEndpointOneOf = nil
 		} else {
-			if err = validator.Validate(dst.ConnectorEndpointOneOf); err != nil {
-				dst.ConnectorEndpointOneOf = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.ConnectorEndpointOneOf = nil
 	}
 
 	// try to unmarshal data into ConnectorEndpointOneOf1
-	err = newStrictDecoder(data).Decode(&dst.ConnectorEndpointOneOf1)
+	err = json.Unmarshal(data, &dst.ConnectorEndpointOneOf1)
 	if err == nil {
 		jsonConnectorEndpointOneOf1, _ := json.Marshal(dst.ConnectorEndpointOneOf1)
 		if string(jsonConnectorEndpointOneOf1) == "{}" { // empty struct
 			dst.ConnectorEndpointOneOf1 = nil
 		} else {
-			if err = validator.Validate(dst.ConnectorEndpointOneOf1); err != nil {
-				dst.ConnectorEndpointOneOf1 = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.ConnectorEndpointOneOf1 = nil

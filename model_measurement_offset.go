@@ -13,7 +13,6 @@ package figma
 import (
 	"encoding/json"
 	"fmt"
-	"gopkg.in/validator.v2"
 )
 
 // MeasurementOffset - struct for MeasurementOffset
@@ -41,34 +40,26 @@ func (dst *MeasurementOffset) UnmarshalJSON(data []byte) error {
 	var err error
 	match := 0
 	// try to unmarshal data into MeasurementOffsetInner
-	err = newStrictDecoder(data).Decode(&dst.MeasurementOffsetInner)
+	err = json.Unmarshal(data, &dst.MeasurementOffsetInner)
 	if err == nil {
 		jsonMeasurementOffsetInner, _ := json.Marshal(dst.MeasurementOffsetInner)
 		if string(jsonMeasurementOffsetInner) == "{}" { // empty struct
 			dst.MeasurementOffsetInner = nil
 		} else {
-			if err = validator.Validate(dst.MeasurementOffsetInner); err != nil {
-				dst.MeasurementOffsetInner = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.MeasurementOffsetInner = nil
 	}
 
 	// try to unmarshal data into MeasurementOffsetOuter
-	err = newStrictDecoder(data).Decode(&dst.MeasurementOffsetOuter)
+	err = json.Unmarshal(data, &dst.MeasurementOffsetOuter)
 	if err == nil {
 		jsonMeasurementOffsetOuter, _ := json.Marshal(dst.MeasurementOffsetOuter)
 		if string(jsonMeasurementOffsetOuter) == "{}" { // empty struct
 			dst.MeasurementOffsetOuter = nil
 		} else {
-			if err = validator.Validate(dst.MeasurementOffsetOuter); err != nil {
-				dst.MeasurementOffsetOuter = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.MeasurementOffsetOuter = nil

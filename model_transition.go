@@ -13,7 +13,6 @@ package figma
 import (
 	"encoding/json"
 	"fmt"
-	"gopkg.in/validator.v2"
 )
 
 // Transition - struct for Transition
@@ -41,34 +40,26 @@ func (dst *Transition) UnmarshalJSON(data []byte) error {
 	var err error
 	match := 0
 	// try to unmarshal data into DirectionalTransition
-	err = newStrictDecoder(data).Decode(&dst.DirectionalTransition)
+	err = json.Unmarshal(data, &dst.DirectionalTransition)
 	if err == nil {
 		jsonDirectionalTransition, _ := json.Marshal(dst.DirectionalTransition)
 		if string(jsonDirectionalTransition) == "{}" { // empty struct
 			dst.DirectionalTransition = nil
 		} else {
-			if err = validator.Validate(dst.DirectionalTransition); err != nil {
-				dst.DirectionalTransition = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.DirectionalTransition = nil
 	}
 
 	// try to unmarshal data into SimpleTransition
-	err = newStrictDecoder(data).Decode(&dst.SimpleTransition)
+	err = json.Unmarshal(data, &dst.SimpleTransition)
 	if err == nil {
 		jsonSimpleTransition, _ := json.Marshal(dst.SimpleTransition)
 		if string(jsonSimpleTransition) == "{}" { // empty struct
 			dst.SimpleTransition = nil
 		} else {
-			if err = validator.Validate(dst.SimpleTransition); err != nil {
-				dst.SimpleTransition = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.SimpleTransition = nil

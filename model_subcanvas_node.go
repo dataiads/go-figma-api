@@ -13,7 +13,6 @@ package figma
 import (
 	"encoding/json"
 	"fmt"
-	"gopkg.in/validator.v2"
 )
 
 // SubcanvasNode - struct for SubcanvasNode
@@ -231,488 +230,326 @@ func WidgetNodeAsSubcanvasNode(v *WidgetNode) SubcanvasNode {
 // Unmarshal JSON data into one of the pointers in the struct
 func (dst *SubcanvasNode) UnmarshalJSON(data []byte) error {
 	var err error
-	match := 0
-	// try to unmarshal data into BooleanOperationNode
-	err = newStrictDecoder(data).Decode(&dst.BooleanOperationNode)
-	if err == nil {
-		jsonBooleanOperationNode, _ := json.Marshal(dst.BooleanOperationNode)
-		if string(jsonBooleanOperationNode) == "{}" { // empty struct
+	// use discriminator value to speed up the lookup
+	var jsonDict map[string]interface{}
+	err = newStrictDecoder(data).Decode(&jsonDict)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal JSON into map for the discriminator lookup")
+	}
+
+	// check if the discriminator value is 'BOOLEAN_OPERATION'
+	if jsonDict["type"] == "BOOLEAN_OPERATION" {
+		// try to unmarshal JSON data into BooleanOperationNode
+		err = json.Unmarshal(data, &dst.BooleanOperationNode)
+		if err == nil {
+			return nil // data stored in dst.BooleanOperationNode, return on the first match
+		} else {
 			dst.BooleanOperationNode = nil
-		} else {
-			if err = validator.Validate(dst.BooleanOperationNode); err != nil {
-				dst.BooleanOperationNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as BooleanOperationNode: %s", err.Error())
 		}
-	} else {
-		dst.BooleanOperationNode = nil
 	}
 
-	// try to unmarshal data into ComponentNode
-	err = newStrictDecoder(data).Decode(&dst.ComponentNode)
-	if err == nil {
-		jsonComponentNode, _ := json.Marshal(dst.ComponentNode)
-		if string(jsonComponentNode) == "{}" { // empty struct
+	// check if the discriminator value is 'COMPONENT'
+	if jsonDict["type"] == "COMPONENT" {
+		// try to unmarshal JSON data into ComponentNode
+		err = json.Unmarshal(data, &dst.ComponentNode)
+		if err == nil {
+			return nil // data stored in dst.ComponentNode, return on the first match
+		} else {
 			dst.ComponentNode = nil
-		} else {
-			if err = validator.Validate(dst.ComponentNode); err != nil {
-				dst.ComponentNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as ComponentNode: %s", err.Error())
 		}
-	} else {
-		dst.ComponentNode = nil
 	}
 
-	// try to unmarshal data into ComponentSetNode
-	err = newStrictDecoder(data).Decode(&dst.ComponentSetNode)
-	if err == nil {
-		jsonComponentSetNode, _ := json.Marshal(dst.ComponentSetNode)
-		if string(jsonComponentSetNode) == "{}" { // empty struct
+	// check if the discriminator value is 'COMPONENT_SET'
+	if jsonDict["type"] == "COMPONENT_SET" {
+		// try to unmarshal JSON data into ComponentSetNode
+		err = json.Unmarshal(data, &dst.ComponentSetNode)
+		if err == nil {
+			return nil // data stored in dst.ComponentSetNode, return on the first match
+		} else {
 			dst.ComponentSetNode = nil
-		} else {
-			if err = validator.Validate(dst.ComponentSetNode); err != nil {
-				dst.ComponentSetNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as ComponentSetNode: %s", err.Error())
 		}
-	} else {
-		dst.ComponentSetNode = nil
 	}
 
-	// try to unmarshal data into ConnectorNode
-	err = newStrictDecoder(data).Decode(&dst.ConnectorNode)
-	if err == nil {
-		jsonConnectorNode, _ := json.Marshal(dst.ConnectorNode)
-		if string(jsonConnectorNode) == "{}" { // empty struct
+	// check if the discriminator value is 'CONNECTOR'
+	if jsonDict["type"] == "CONNECTOR" {
+		// try to unmarshal JSON data into ConnectorNode
+		err = json.Unmarshal(data, &dst.ConnectorNode)
+		if err == nil {
+			return nil // data stored in dst.ConnectorNode, return on the first match
+		} else {
 			dst.ConnectorNode = nil
-		} else {
-			if err = validator.Validate(dst.ConnectorNode); err != nil {
-				dst.ConnectorNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as ConnectorNode: %s", err.Error())
 		}
-	} else {
-		dst.ConnectorNode = nil
 	}
 
-	// try to unmarshal data into EllipseNode
-	err = newStrictDecoder(data).Decode(&dst.EllipseNode)
-	if err == nil {
-		jsonEllipseNode, _ := json.Marshal(dst.EllipseNode)
-		if string(jsonEllipseNode) == "{}" { // empty struct
+	// check if the discriminator value is 'ELLIPSE'
+	if jsonDict["type"] == "ELLIPSE" {
+		// try to unmarshal JSON data into EllipseNode
+		err = json.Unmarshal(data, &dst.EllipseNode)
+		if err == nil {
+			return nil // data stored in dst.EllipseNode, return on the first match
+		} else {
 			dst.EllipseNode = nil
-		} else {
-			if err = validator.Validate(dst.EllipseNode); err != nil {
-				dst.EllipseNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as EllipseNode: %s", err.Error())
 		}
-	} else {
-		dst.EllipseNode = nil
 	}
 
-	// try to unmarshal data into EmbedNode
-	err = newStrictDecoder(data).Decode(&dst.EmbedNode)
-	if err == nil {
-		jsonEmbedNode, _ := json.Marshal(dst.EmbedNode)
-		if string(jsonEmbedNode) == "{}" { // empty struct
+	// check if the discriminator value is 'EMBED'
+	if jsonDict["type"] == "EMBED" {
+		// try to unmarshal JSON data into EmbedNode
+		err = json.Unmarshal(data, &dst.EmbedNode)
+		if err == nil {
+			return nil // data stored in dst.EmbedNode, return on the first match
+		} else {
 			dst.EmbedNode = nil
-		} else {
-			if err = validator.Validate(dst.EmbedNode); err != nil {
-				dst.EmbedNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as EmbedNode: %s", err.Error())
 		}
-	} else {
-		dst.EmbedNode = nil
 	}
 
-	// try to unmarshal data into FrameNode
-	err = newStrictDecoder(data).Decode(&dst.FrameNode)
-	if err == nil {
-		jsonFrameNode, _ := json.Marshal(dst.FrameNode)
-		if string(jsonFrameNode) == "{}" { // empty struct
+	// check if the discriminator value is 'FRAME'
+	if jsonDict["type"] == "FRAME" {
+		// try to unmarshal JSON data into FrameNode
+		err = json.Unmarshal(data, &dst.FrameNode)
+		if err == nil {
+			return nil // data stored in dst.FrameNode, return on the first match
+		} else {
 			dst.FrameNode = nil
-		} else {
-			if err = validator.Validate(dst.FrameNode); err != nil {
-				dst.FrameNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as FrameNode: %s", err.Error())
 		}
-	} else {
-		dst.FrameNode = nil
 	}
 
-	// try to unmarshal data into GroupNode
-	err = newStrictDecoder(data).Decode(&dst.GroupNode)
-	if err == nil {
-		jsonGroupNode, _ := json.Marshal(dst.GroupNode)
-		if string(jsonGroupNode) == "{}" { // empty struct
+	// check if the discriminator value is 'GROUP'
+	if jsonDict["type"] == "GROUP" {
+		// try to unmarshal JSON data into GroupNode
+		err = json.Unmarshal(data, &dst.GroupNode)
+		if err == nil {
+			return nil // data stored in dst.GroupNode, return on the first match
+		} else {
 			dst.GroupNode = nil
-		} else {
-			if err = validator.Validate(dst.GroupNode); err != nil {
-				dst.GroupNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as GroupNode: %s", err.Error())
 		}
-	} else {
-		dst.GroupNode = nil
 	}
 
-	// try to unmarshal data into InstanceNode
-	err = newStrictDecoder(data).Decode(&dst.InstanceNode)
-	if err == nil {
-		jsonInstanceNode, _ := json.Marshal(dst.InstanceNode)
-		if string(jsonInstanceNode) == "{}" { // empty struct
+	// check if the discriminator value is 'INSTANCE'
+	if jsonDict["type"] == "INSTANCE" {
+		// try to unmarshal JSON data into InstanceNode
+		err = json.Unmarshal(data, &dst.InstanceNode)
+		if err == nil {
+			return nil // data stored in dst.InstanceNode, return on the first match
+		} else {
 			dst.InstanceNode = nil
-		} else {
-			if err = validator.Validate(dst.InstanceNode); err != nil {
-				dst.InstanceNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as InstanceNode: %s", err.Error())
 		}
-	} else {
-		dst.InstanceNode = nil
 	}
 
-	// try to unmarshal data into LineNode
-	err = newStrictDecoder(data).Decode(&dst.LineNode)
-	if err == nil {
-		jsonLineNode, _ := json.Marshal(dst.LineNode)
-		if string(jsonLineNode) == "{}" { // empty struct
+	// check if the discriminator value is 'LINE'
+	if jsonDict["type"] == "LINE" {
+		// try to unmarshal JSON data into LineNode
+		err = json.Unmarshal(data, &dst.LineNode)
+		if err == nil {
+			return nil // data stored in dst.LineNode, return on the first match
+		} else {
 			dst.LineNode = nil
-		} else {
-			if err = validator.Validate(dst.LineNode); err != nil {
-				dst.LineNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as LineNode: %s", err.Error())
 		}
-	} else {
-		dst.LineNode = nil
 	}
 
-	// try to unmarshal data into LinkUnfurlNode
-	err = newStrictDecoder(data).Decode(&dst.LinkUnfurlNode)
-	if err == nil {
-		jsonLinkUnfurlNode, _ := json.Marshal(dst.LinkUnfurlNode)
-		if string(jsonLinkUnfurlNode) == "{}" { // empty struct
+	// check if the discriminator value is 'LINK_UNFURL'
+	if jsonDict["type"] == "LINK_UNFURL" {
+		// try to unmarshal JSON data into LinkUnfurlNode
+		err = json.Unmarshal(data, &dst.LinkUnfurlNode)
+		if err == nil {
+			return nil // data stored in dst.LinkUnfurlNode, return on the first match
+		} else {
 			dst.LinkUnfurlNode = nil
-		} else {
-			if err = validator.Validate(dst.LinkUnfurlNode); err != nil {
-				dst.LinkUnfurlNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as LinkUnfurlNode: %s", err.Error())
 		}
-	} else {
-		dst.LinkUnfurlNode = nil
 	}
 
-	// try to unmarshal data into RectangleNode
-	err = newStrictDecoder(data).Decode(&dst.RectangleNode)
-	if err == nil {
-		jsonRectangleNode, _ := json.Marshal(dst.RectangleNode)
-		if string(jsonRectangleNode) == "{}" { // empty struct
+	// check if the discriminator value is 'RECTANGLE'
+	if jsonDict["type"] == "RECTANGLE" {
+		// try to unmarshal JSON data into RectangleNode
+		err = json.Unmarshal(data, &dst.RectangleNode)
+		if err == nil {
+			return nil // data stored in dst.RectangleNode, return on the first match
+		} else {
 			dst.RectangleNode = nil
-		} else {
-			if err = validator.Validate(dst.RectangleNode); err != nil {
-				dst.RectangleNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as RectangleNode: %s", err.Error())
 		}
-	} else {
-		dst.RectangleNode = nil
 	}
 
-	// try to unmarshal data into RegularPolygonNode
-	err = newStrictDecoder(data).Decode(&dst.RegularPolygonNode)
-	if err == nil {
-		jsonRegularPolygonNode, _ := json.Marshal(dst.RegularPolygonNode)
-		if string(jsonRegularPolygonNode) == "{}" { // empty struct
+	// check if the discriminator value is 'REGULAR_POLYGON'
+	if jsonDict["type"] == "REGULAR_POLYGON" {
+		// try to unmarshal JSON data into RegularPolygonNode
+		err = json.Unmarshal(data, &dst.RegularPolygonNode)
+		if err == nil {
+			return nil // data stored in dst.RegularPolygonNode, return on the first match
+		} else {
 			dst.RegularPolygonNode = nil
-		} else {
-			if err = validator.Validate(dst.RegularPolygonNode); err != nil {
-				dst.RegularPolygonNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as RegularPolygonNode: %s", err.Error())
 		}
-	} else {
-		dst.RegularPolygonNode = nil
 	}
 
-	// try to unmarshal data into SectionNode
-	err = newStrictDecoder(data).Decode(&dst.SectionNode)
-	if err == nil {
-		jsonSectionNode, _ := json.Marshal(dst.SectionNode)
-		if string(jsonSectionNode) == "{}" { // empty struct
+	// check if the discriminator value is 'SECTION'
+	if jsonDict["type"] == "SECTION" {
+		// try to unmarshal JSON data into SectionNode
+		err = json.Unmarshal(data, &dst.SectionNode)
+		if err == nil {
+			return nil // data stored in dst.SectionNode, return on the first match
+		} else {
 			dst.SectionNode = nil
-		} else {
-			if err = validator.Validate(dst.SectionNode); err != nil {
-				dst.SectionNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as SectionNode: %s", err.Error())
 		}
-	} else {
-		dst.SectionNode = nil
 	}
 
-	// try to unmarshal data into ShapeWithTextNode
-	err = newStrictDecoder(data).Decode(&dst.ShapeWithTextNode)
-	if err == nil {
-		jsonShapeWithTextNode, _ := json.Marshal(dst.ShapeWithTextNode)
-		if string(jsonShapeWithTextNode) == "{}" { // empty struct
+	// check if the discriminator value is 'SHAPE_WITH_TEXT'
+	if jsonDict["type"] == "SHAPE_WITH_TEXT" {
+		// try to unmarshal JSON data into ShapeWithTextNode
+		err = json.Unmarshal(data, &dst.ShapeWithTextNode)
+		if err == nil {
+			return nil // data stored in dst.ShapeWithTextNode, return on the first match
+		} else {
 			dst.ShapeWithTextNode = nil
-		} else {
-			if err = validator.Validate(dst.ShapeWithTextNode); err != nil {
-				dst.ShapeWithTextNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as ShapeWithTextNode: %s", err.Error())
 		}
-	} else {
-		dst.ShapeWithTextNode = nil
 	}
 
-	// try to unmarshal data into SliceNode
-	err = newStrictDecoder(data).Decode(&dst.SliceNode)
-	if err == nil {
-		jsonSliceNode, _ := json.Marshal(dst.SliceNode)
-		if string(jsonSliceNode) == "{}" { // empty struct
+	// check if the discriminator value is 'SLICE'
+	if jsonDict["type"] == "SLICE" {
+		// try to unmarshal JSON data into SliceNode
+		err = json.Unmarshal(data, &dst.SliceNode)
+		if err == nil {
+			return nil // data stored in dst.SliceNode, return on the first match
+		} else {
 			dst.SliceNode = nil
-		} else {
-			if err = validator.Validate(dst.SliceNode); err != nil {
-				dst.SliceNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as SliceNode: %s", err.Error())
 		}
-	} else {
-		dst.SliceNode = nil
 	}
 
-	// try to unmarshal data into StarNode
-	err = newStrictDecoder(data).Decode(&dst.StarNode)
-	if err == nil {
-		jsonStarNode, _ := json.Marshal(dst.StarNode)
-		if string(jsonStarNode) == "{}" { // empty struct
+	// check if the discriminator value is 'STAR'
+	if jsonDict["type"] == "STAR" {
+		// try to unmarshal JSON data into StarNode
+		err = json.Unmarshal(data, &dst.StarNode)
+		if err == nil {
+			return nil // data stored in dst.StarNode, return on the first match
+		} else {
 			dst.StarNode = nil
-		} else {
-			if err = validator.Validate(dst.StarNode); err != nil {
-				dst.StarNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as StarNode: %s", err.Error())
 		}
-	} else {
-		dst.StarNode = nil
 	}
 
-	// try to unmarshal data into StickyNode
-	err = newStrictDecoder(data).Decode(&dst.StickyNode)
-	if err == nil {
-		jsonStickyNode, _ := json.Marshal(dst.StickyNode)
-		if string(jsonStickyNode) == "{}" { // empty struct
+	// check if the discriminator value is 'STICKY'
+	if jsonDict["type"] == "STICKY" {
+		// try to unmarshal JSON data into StickyNode
+		err = json.Unmarshal(data, &dst.StickyNode)
+		if err == nil {
+			return nil // data stored in dst.StickyNode, return on the first match
+		} else {
 			dst.StickyNode = nil
-		} else {
-			if err = validator.Validate(dst.StickyNode); err != nil {
-				dst.StickyNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as StickyNode: %s", err.Error())
 		}
-	} else {
-		dst.StickyNode = nil
 	}
 
-	// try to unmarshal data into TableCellNode
-	err = newStrictDecoder(data).Decode(&dst.TableCellNode)
-	if err == nil {
-		jsonTableCellNode, _ := json.Marshal(dst.TableCellNode)
-		if string(jsonTableCellNode) == "{}" { // empty struct
-			dst.TableCellNode = nil
+	// check if the discriminator value is 'TABLE'
+	if jsonDict["type"] == "TABLE" {
+		// try to unmarshal JSON data into TableNode
+		err = json.Unmarshal(data, &dst.TableNode)
+		if err == nil {
+			return nil // data stored in dst.TableNode, return on the first match
 		} else {
-			if err = validator.Validate(dst.TableCellNode); err != nil {
-				dst.TableCellNode = nil
-			} else {
-				match++
-			}
-		}
-	} else {
-		dst.TableCellNode = nil
-	}
-
-	// try to unmarshal data into TableNode
-	err = newStrictDecoder(data).Decode(&dst.TableNode)
-	if err == nil {
-		jsonTableNode, _ := json.Marshal(dst.TableNode)
-		if string(jsonTableNode) == "{}" { // empty struct
 			dst.TableNode = nil
-		} else {
-			if err = validator.Validate(dst.TableNode); err != nil {
-				dst.TableNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as TableNode: %s", err.Error())
 		}
-	} else {
-		dst.TableNode = nil
 	}
 
-	// try to unmarshal data into TextNode
-	err = newStrictDecoder(data).Decode(&dst.TextNode)
-	if err == nil {
-		jsonTextNode, _ := json.Marshal(dst.TextNode)
-		if string(jsonTextNode) == "{}" { // empty struct
+	// check if the discriminator value is 'TABLE_CELL'
+	if jsonDict["type"] == "TABLE_CELL" {
+		// try to unmarshal JSON data into TableCellNode
+		err = json.Unmarshal(data, &dst.TableCellNode)
+		if err == nil {
+			return nil // data stored in dst.TableCellNode, return on the first match
+		} else {
+			dst.TableCellNode = nil
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as TableCellNode: %s", err.Error())
+		}
+	}
+
+	// check if the discriminator value is 'TEXT'
+	if jsonDict["type"] == "TEXT" {
+		// try to unmarshal JSON data into TextNode
+		err = json.Unmarshal(data, &dst.TextNode)
+		if err == nil {
+			return nil // data stored in dst.TextNode, return on the first match
+		} else {
 			dst.TextNode = nil
-		} else {
-			if err = validator.Validate(dst.TextNode); err != nil {
-				dst.TextNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as TextNode: %s", err.Error())
 		}
-	} else {
-		dst.TextNode = nil
 	}
 
-	// try to unmarshal data into TextPathNode
-	err = newStrictDecoder(data).Decode(&dst.TextPathNode)
-	if err == nil {
-		jsonTextPathNode, _ := json.Marshal(dst.TextPathNode)
-		if string(jsonTextPathNode) == "{}" { // empty struct
+	// check if the discriminator value is 'TEXT_PATH'
+	if jsonDict["type"] == "TEXT_PATH" {
+		// try to unmarshal JSON data into TextPathNode
+		err = json.Unmarshal(data, &dst.TextPathNode)
+		if err == nil {
+			return nil // data stored in dst.TextPathNode, return on the first match
+		} else {
 			dst.TextPathNode = nil
-		} else {
-			if err = validator.Validate(dst.TextPathNode); err != nil {
-				dst.TextPathNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as TextPathNode: %s", err.Error())
 		}
-	} else {
-		dst.TextPathNode = nil
 	}
 
-	// try to unmarshal data into TransformGroupNode
-	err = newStrictDecoder(data).Decode(&dst.TransformGroupNode)
-	if err == nil {
-		jsonTransformGroupNode, _ := json.Marshal(dst.TransformGroupNode)
-		if string(jsonTransformGroupNode) == "{}" { // empty struct
+	// check if the discriminator value is 'TRANSFORM_GROUP'
+	if jsonDict["type"] == "TRANSFORM_GROUP" {
+		// try to unmarshal JSON data into TransformGroupNode
+		err = json.Unmarshal(data, &dst.TransformGroupNode)
+		if err == nil {
+			return nil // data stored in dst.TransformGroupNode, return on the first match
+		} else {
 			dst.TransformGroupNode = nil
-		} else {
-			if err = validator.Validate(dst.TransformGroupNode); err != nil {
-				dst.TransformGroupNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as TransformGroupNode: %s", err.Error())
 		}
-	} else {
-		dst.TransformGroupNode = nil
 	}
 
-	// try to unmarshal data into VectorNode
-	err = newStrictDecoder(data).Decode(&dst.VectorNode)
-	if err == nil {
-		jsonVectorNode, _ := json.Marshal(dst.VectorNode)
-		if string(jsonVectorNode) == "{}" { // empty struct
+	// check if the discriminator value is 'VECTOR'
+	if jsonDict["type"] == "VECTOR" {
+		// try to unmarshal JSON data into VectorNode
+		err = json.Unmarshal(data, &dst.VectorNode)
+		if err == nil {
+			return nil // data stored in dst.VectorNode, return on the first match
+		} else {
 			dst.VectorNode = nil
-		} else {
-			if err = validator.Validate(dst.VectorNode); err != nil {
-				dst.VectorNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as VectorNode: %s", err.Error())
 		}
-	} else {
-		dst.VectorNode = nil
 	}
 
-	// try to unmarshal data into WashiTapeNode
-	err = newStrictDecoder(data).Decode(&dst.WashiTapeNode)
-	if err == nil {
-		jsonWashiTapeNode, _ := json.Marshal(dst.WashiTapeNode)
-		if string(jsonWashiTapeNode) == "{}" { // empty struct
+	// check if the discriminator value is 'WASHI_TAPE'
+	if jsonDict["type"] == "WASHI_TAPE" {
+		// try to unmarshal JSON data into WashiTapeNode
+		err = json.Unmarshal(data, &dst.WashiTapeNode)
+		if err == nil {
+			return nil // data stored in dst.WashiTapeNode, return on the first match
+		} else {
 			dst.WashiTapeNode = nil
-		} else {
-			if err = validator.Validate(dst.WashiTapeNode); err != nil {
-				dst.WashiTapeNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as WashiTapeNode: %s", err.Error())
 		}
-	} else {
-		dst.WashiTapeNode = nil
 	}
 
-	// try to unmarshal data into WidgetNode
-	err = newStrictDecoder(data).Decode(&dst.WidgetNode)
-	if err == nil {
-		jsonWidgetNode, _ := json.Marshal(dst.WidgetNode)
-		if string(jsonWidgetNode) == "{}" { // empty struct
+	// check if the discriminator value is 'WIDGET'
+	if jsonDict["type"] == "WIDGET" {
+		// try to unmarshal JSON data into WidgetNode
+		err = json.Unmarshal(data, &dst.WidgetNode)
+		if err == nil {
+			return nil // data stored in dst.WidgetNode, return on the first match
+		} else {
 			dst.WidgetNode = nil
-		} else {
-			if err = validator.Validate(dst.WidgetNode); err != nil {
-				dst.WidgetNode = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal SubcanvasNode as WidgetNode: %s", err.Error())
 		}
-	} else {
-		dst.WidgetNode = nil
 	}
 
-	if match > 1 { // more than 1 match
-		// reset to nil
-		dst.BooleanOperationNode = nil
-		dst.ComponentNode = nil
-		dst.ComponentSetNode = nil
-		dst.ConnectorNode = nil
-		dst.EllipseNode = nil
-		dst.EmbedNode = nil
-		dst.FrameNode = nil
-		dst.GroupNode = nil
-		dst.InstanceNode = nil
-		dst.LineNode = nil
-		dst.LinkUnfurlNode = nil
-		dst.RectangleNode = nil
-		dst.RegularPolygonNode = nil
-		dst.SectionNode = nil
-		dst.ShapeWithTextNode = nil
-		dst.SliceNode = nil
-		dst.StarNode = nil
-		dst.StickyNode = nil
-		dst.TableCellNode = nil
-		dst.TableNode = nil
-		dst.TextNode = nil
-		dst.TextPathNode = nil
-		dst.TransformGroupNode = nil
-		dst.VectorNode = nil
-		dst.WashiTapeNode = nil
-		dst.WidgetNode = nil
-
-		return fmt.Errorf("data matches more than one schema in oneOf(SubcanvasNode)")
-	} else if match == 1 {
-		return nil // exactly one match
-	} else { // no match
-		if err != nil {
-			return fmt.Errorf("data failed to match schemas in oneOf(SubcanvasNode): %v", err)
-		}
-
-		return fmt.Errorf("data failed to match schemas in oneOf(SubcanvasNode)")
-	}
+	return nil
 }
 
 // Marshal data from the first non-nil pointers in the struct to JSON

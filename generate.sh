@@ -14,7 +14,7 @@ docker run --rm \
   -g go \
   -o /work/.generated \
   --global-property 'apis,models,supportingFiles,apiTests=false,apiDocs=false,modelTests=false,modelDocs=false' \
-  --additional-properties 'enumClassPrefix=true,packageName=figma,packageVersion=0.42.0'
+  --additional-properties 'enumClassPrefix=true,packageName=figma,packageVersion=0.42.0,useOneOfDiscriminatorLookup=true'
 
 cp "$output"/*.go .
 gofmt -w ./*.go

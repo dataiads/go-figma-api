@@ -13,7 +13,6 @@ package figma
 import (
 	"encoding/json"
 	"fmt"
-	"gopkg.in/validator.v2"
 )
 
 // Effect - struct for Effect
@@ -63,110 +62,86 @@ func TextureEffectAsEffect(v *TextureEffect) Effect {
 // Unmarshal JSON data into one of the pointers in the struct
 func (dst *Effect) UnmarshalJSON(data []byte) error {
 	var err error
-	match := 0
-	// try to unmarshal data into BlurEffect
-	err = newStrictDecoder(data).Decode(&dst.BlurEffect)
-	if err == nil {
-		jsonBlurEffect, _ := json.Marshal(dst.BlurEffect)
-		if string(jsonBlurEffect) == "{}" { // empty struct
+	// use discriminator value to speed up the lookup
+	var jsonDict map[string]interface{}
+	err = newStrictDecoder(data).Decode(&jsonDict)
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal JSON into map for the discriminator lookup")
+	}
+
+	// check if the discriminator value is 'BACKGROUND_BLUR'
+	if jsonDict["type"] == "BACKGROUND_BLUR" {
+		// try to unmarshal JSON data into BlurEffect
+		err = json.Unmarshal(data, &dst.BlurEffect)
+		if err == nil {
+			return nil // data stored in dst.BlurEffect, return on the first match
+		} else {
 			dst.BlurEffect = nil
-		} else {
-			if err = validator.Validate(dst.BlurEffect); err != nil {
-				dst.BlurEffect = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal Effect as BlurEffect: %s", err.Error())
 		}
-	} else {
-		dst.BlurEffect = nil
 	}
 
-	// try to unmarshal data into DropShadowEffect
-	err = newStrictDecoder(data).Decode(&dst.DropShadowEffect)
-	if err == nil {
-		jsonDropShadowEffect, _ := json.Marshal(dst.DropShadowEffect)
-		if string(jsonDropShadowEffect) == "{}" { // empty struct
+	// check if the discriminator value is 'DROP_SHADOW'
+	if jsonDict["type"] == "DROP_SHADOW" {
+		// try to unmarshal JSON data into DropShadowEffect
+		err = json.Unmarshal(data, &dst.DropShadowEffect)
+		if err == nil {
+			return nil // data stored in dst.DropShadowEffect, return on the first match
+		} else {
 			dst.DropShadowEffect = nil
-		} else {
-			if err = validator.Validate(dst.DropShadowEffect); err != nil {
-				dst.DropShadowEffect = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal Effect as DropShadowEffect: %s", err.Error())
 		}
-	} else {
-		dst.DropShadowEffect = nil
 	}
 
-	// try to unmarshal data into InnerShadowEffect
-	err = newStrictDecoder(data).Decode(&dst.InnerShadowEffect)
-	if err == nil {
-		jsonInnerShadowEffect, _ := json.Marshal(dst.InnerShadowEffect)
-		if string(jsonInnerShadowEffect) == "{}" { // empty struct
+	// check if the discriminator value is 'INNER_SHADOW'
+	if jsonDict["type"] == "INNER_SHADOW" {
+		// try to unmarshal JSON data into InnerShadowEffect
+		err = json.Unmarshal(data, &dst.InnerShadowEffect)
+		if err == nil {
+			return nil // data stored in dst.InnerShadowEffect, return on the first match
+		} else {
 			dst.InnerShadowEffect = nil
-		} else {
-			if err = validator.Validate(dst.InnerShadowEffect); err != nil {
-				dst.InnerShadowEffect = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal Effect as InnerShadowEffect: %s", err.Error())
 		}
-	} else {
-		dst.InnerShadowEffect = nil
 	}
 
-	// try to unmarshal data into NoiseEffect
-	err = newStrictDecoder(data).Decode(&dst.NoiseEffect)
-	if err == nil {
-		jsonNoiseEffect, _ := json.Marshal(dst.NoiseEffect)
-		if string(jsonNoiseEffect) == "{}" { // empty struct
+	// check if the discriminator value is 'LAYER_BLUR'
+	if jsonDict["type"] == "LAYER_BLUR" {
+		// try to unmarshal JSON data into BlurEffect
+		err = json.Unmarshal(data, &dst.BlurEffect)
+		if err == nil {
+			return nil // data stored in dst.BlurEffect, return on the first match
+		} else {
+			dst.BlurEffect = nil
+			return fmt.Errorf("failed to unmarshal Effect as BlurEffect: %s", err.Error())
+		}
+	}
+
+	// check if the discriminator value is 'NOISE'
+	if jsonDict["type"] == "NOISE" {
+		// try to unmarshal JSON data into NoiseEffect
+		err = json.Unmarshal(data, &dst.NoiseEffect)
+		if err == nil {
+			return nil // data stored in dst.NoiseEffect, return on the first match
+		} else {
 			dst.NoiseEffect = nil
-		} else {
-			if err = validator.Validate(dst.NoiseEffect); err != nil {
-				dst.NoiseEffect = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal Effect as NoiseEffect: %s", err.Error())
 		}
-	} else {
-		dst.NoiseEffect = nil
 	}
 
-	// try to unmarshal data into TextureEffect
-	err = newStrictDecoder(data).Decode(&dst.TextureEffect)
-	if err == nil {
-		jsonTextureEffect, _ := json.Marshal(dst.TextureEffect)
-		if string(jsonTextureEffect) == "{}" { // empty struct
+	// check if the discriminator value is 'TEXTURE'
+	if jsonDict["type"] == "TEXTURE" {
+		// try to unmarshal JSON data into TextureEffect
+		err = json.Unmarshal(data, &dst.TextureEffect)
+		if err == nil {
+			return nil // data stored in dst.TextureEffect, return on the first match
+		} else {
 			dst.TextureEffect = nil
-		} else {
-			if err = validator.Validate(dst.TextureEffect); err != nil {
-				dst.TextureEffect = nil
-			} else {
-				match++
-			}
+			return fmt.Errorf("failed to unmarshal Effect as TextureEffect: %s", err.Error())
 		}
-	} else {
-		dst.TextureEffect = nil
 	}
 
-	if match > 1 { // more than 1 match
-		// reset to nil
-		dst.BlurEffect = nil
-		dst.DropShadowEffect = nil
-		dst.InnerShadowEffect = nil
-		dst.NoiseEffect = nil
-		dst.TextureEffect = nil
-
-		return fmt.Errorf("data matches more than one schema in oneOf(Effect)")
-	} else if match == 1 {
-		return nil // exactly one match
-	} else { // no match
-		if err != nil {
-			return fmt.Errorf("data failed to match schemas in oneOf(Effect): %v", err)
-		}
-
-		return fmt.Errorf("data failed to match schemas in oneOf(Effect)")
-	}
+	return nil
 }
 
 // Marshal data from the first non-nil pointers in the struct to JSON

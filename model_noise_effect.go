@@ -13,7 +13,6 @@ package figma
 import (
 	"encoding/json"
 	"fmt"
-	"gopkg.in/validator.v2"
 )
 
 // NoiseEffect - struct for NoiseEffect
@@ -49,51 +48,39 @@ func (dst *NoiseEffect) UnmarshalJSON(data []byte) error {
 	var err error
 	match := 0
 	// try to unmarshal data into DuotoneNoiseEffect
-	err = newStrictDecoder(data).Decode(&dst.DuotoneNoiseEffect)
+	err = json.Unmarshal(data, &dst.DuotoneNoiseEffect)
 	if err == nil {
 		jsonDuotoneNoiseEffect, _ := json.Marshal(dst.DuotoneNoiseEffect)
 		if string(jsonDuotoneNoiseEffect) == "{}" { // empty struct
 			dst.DuotoneNoiseEffect = nil
 		} else {
-			if err = validator.Validate(dst.DuotoneNoiseEffect); err != nil {
-				dst.DuotoneNoiseEffect = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.DuotoneNoiseEffect = nil
 	}
 
 	// try to unmarshal data into MonotoneNoiseEffect
-	err = newStrictDecoder(data).Decode(&dst.MonotoneNoiseEffect)
+	err = json.Unmarshal(data, &dst.MonotoneNoiseEffect)
 	if err == nil {
 		jsonMonotoneNoiseEffect, _ := json.Marshal(dst.MonotoneNoiseEffect)
 		if string(jsonMonotoneNoiseEffect) == "{}" { // empty struct
 			dst.MonotoneNoiseEffect = nil
 		} else {
-			if err = validator.Validate(dst.MonotoneNoiseEffect); err != nil {
-				dst.MonotoneNoiseEffect = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.MonotoneNoiseEffect = nil
 	}
 
 	// try to unmarshal data into MultitoneNoiseEffect
-	err = newStrictDecoder(data).Decode(&dst.MultitoneNoiseEffect)
+	err = json.Unmarshal(data, &dst.MultitoneNoiseEffect)
 	if err == nil {
 		jsonMultitoneNoiseEffect, _ := json.Marshal(dst.MultitoneNoiseEffect)
 		if string(jsonMultitoneNoiseEffect) == "{}" { // empty struct
 			dst.MultitoneNoiseEffect = nil
 		} else {
-			if err = validator.Validate(dst.MultitoneNoiseEffect); err != nil {
-				dst.MultitoneNoiseEffect = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.MultitoneNoiseEffect = nil

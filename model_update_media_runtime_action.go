@@ -13,7 +13,6 @@ package figma
 import (
 	"encoding/json"
 	"fmt"
-	"gopkg.in/validator.v2"
 )
 
 // UpdateMediaRuntimeAction - An action that affects a video node in the Figma viewer. For example, to play, pause, or skip.
@@ -49,51 +48,39 @@ func (dst *UpdateMediaRuntimeAction) UnmarshalJSON(data []byte) error {
 	var err error
 	match := 0
 	// try to unmarshal data into UpdateMediaRuntimeActionOneOf
-	err = newStrictDecoder(data).Decode(&dst.UpdateMediaRuntimeActionOneOf)
+	err = json.Unmarshal(data, &dst.UpdateMediaRuntimeActionOneOf)
 	if err == nil {
 		jsonUpdateMediaRuntimeActionOneOf, _ := json.Marshal(dst.UpdateMediaRuntimeActionOneOf)
 		if string(jsonUpdateMediaRuntimeActionOneOf) == "{}" { // empty struct
 			dst.UpdateMediaRuntimeActionOneOf = nil
 		} else {
-			if err = validator.Validate(dst.UpdateMediaRuntimeActionOneOf); err != nil {
-				dst.UpdateMediaRuntimeActionOneOf = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.UpdateMediaRuntimeActionOneOf = nil
 	}
 
 	// try to unmarshal data into UpdateMediaRuntimeActionOneOf1
-	err = newStrictDecoder(data).Decode(&dst.UpdateMediaRuntimeActionOneOf1)
+	err = json.Unmarshal(data, &dst.UpdateMediaRuntimeActionOneOf1)
 	if err == nil {
 		jsonUpdateMediaRuntimeActionOneOf1, _ := json.Marshal(dst.UpdateMediaRuntimeActionOneOf1)
 		if string(jsonUpdateMediaRuntimeActionOneOf1) == "{}" { // empty struct
 			dst.UpdateMediaRuntimeActionOneOf1 = nil
 		} else {
-			if err = validator.Validate(dst.UpdateMediaRuntimeActionOneOf1); err != nil {
-				dst.UpdateMediaRuntimeActionOneOf1 = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.UpdateMediaRuntimeActionOneOf1 = nil
 	}
 
 	// try to unmarshal data into UpdateMediaRuntimeActionOneOf2
-	err = newStrictDecoder(data).Decode(&dst.UpdateMediaRuntimeActionOneOf2)
+	err = json.Unmarshal(data, &dst.UpdateMediaRuntimeActionOneOf2)
 	if err == nil {
 		jsonUpdateMediaRuntimeActionOneOf2, _ := json.Marshal(dst.UpdateMediaRuntimeActionOneOf2)
 		if string(jsonUpdateMediaRuntimeActionOneOf2) == "{}" { // empty struct
 			dst.UpdateMediaRuntimeActionOneOf2 = nil
 		} else {
-			if err = validator.Validate(dst.UpdateMediaRuntimeActionOneOf2); err != nil {
-				dst.UpdateMediaRuntimeActionOneOf2 = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.UpdateMediaRuntimeActionOneOf2 = nil

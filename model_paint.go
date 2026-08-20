@@ -13,7 +13,6 @@ package figma
 import (
 	"encoding/json"
 	"fmt"
-	"gopkg.in/validator.v2"
 )
 
 // Paint - struct for Paint
@@ -57,68 +56,52 @@ func (dst *Paint) UnmarshalJSON(data []byte) error {
 	var err error
 	match := 0
 	// try to unmarshal data into GradientPaint
-	err = newStrictDecoder(data).Decode(&dst.GradientPaint)
+	err = json.Unmarshal(data, &dst.GradientPaint)
 	if err == nil {
 		jsonGradientPaint, _ := json.Marshal(dst.GradientPaint)
 		if string(jsonGradientPaint) == "{}" { // empty struct
 			dst.GradientPaint = nil
 		} else {
-			if err = validator.Validate(dst.GradientPaint); err != nil {
-				dst.GradientPaint = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.GradientPaint = nil
 	}
 
 	// try to unmarshal data into ImagePaint
-	err = newStrictDecoder(data).Decode(&dst.ImagePaint)
+	err = json.Unmarshal(data, &dst.ImagePaint)
 	if err == nil {
 		jsonImagePaint, _ := json.Marshal(dst.ImagePaint)
 		if string(jsonImagePaint) == "{}" { // empty struct
 			dst.ImagePaint = nil
 		} else {
-			if err = validator.Validate(dst.ImagePaint); err != nil {
-				dst.ImagePaint = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.ImagePaint = nil
 	}
 
 	// try to unmarshal data into PatternPaint
-	err = newStrictDecoder(data).Decode(&dst.PatternPaint)
+	err = json.Unmarshal(data, &dst.PatternPaint)
 	if err == nil {
 		jsonPatternPaint, _ := json.Marshal(dst.PatternPaint)
 		if string(jsonPatternPaint) == "{}" { // empty struct
 			dst.PatternPaint = nil
 		} else {
-			if err = validator.Validate(dst.PatternPaint); err != nil {
-				dst.PatternPaint = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.PatternPaint = nil
 	}
 
 	// try to unmarshal data into SolidPaint
-	err = newStrictDecoder(data).Decode(&dst.SolidPaint)
+	err = json.Unmarshal(data, &dst.SolidPaint)
 	if err == nil {
 		jsonSolidPaint, _ := json.Marshal(dst.SolidPaint)
 		if string(jsonSolidPaint) == "{}" { // empty struct
 			dst.SolidPaint = nil
 		} else {
-			if err = validator.Validate(dst.SolidPaint); err != nil {
-				dst.SolidPaint = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.SolidPaint = nil

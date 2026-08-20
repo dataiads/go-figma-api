@@ -13,7 +13,6 @@ package figma
 import (
 	"encoding/json"
 	"fmt"
-	"gopkg.in/validator.v2"
 )
 
 // VariableDataValue - struct for VariableDataValue
@@ -81,119 +80,91 @@ func (dst *VariableDataValue) UnmarshalJSON(data []byte) error {
 	var err error
 	match := 0
 	// try to unmarshal data into Expression
-	err = newStrictDecoder(data).Decode(&dst.Expression)
+	err = json.Unmarshal(data, &dst.Expression)
 	if err == nil {
 		jsonExpression, _ := json.Marshal(dst.Expression)
 		if string(jsonExpression) == "{}" { // empty struct
 			dst.Expression = nil
 		} else {
-			if err = validator.Validate(dst.Expression); err != nil {
-				dst.Expression = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.Expression = nil
 	}
 
 	// try to unmarshal data into RGB
-	err = newStrictDecoder(data).Decode(&dst.RGB)
+	err = json.Unmarshal(data, &dst.RGB)
 	if err == nil {
 		jsonRGB, _ := json.Marshal(dst.RGB)
 		if string(jsonRGB) == "{}" { // empty struct
 			dst.RGB = nil
 		} else {
-			if err = validator.Validate(dst.RGB); err != nil {
-				dst.RGB = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.RGB = nil
 	}
 
 	// try to unmarshal data into RGBA
-	err = newStrictDecoder(data).Decode(&dst.RGBA)
+	err = json.Unmarshal(data, &dst.RGBA)
 	if err == nil {
 		jsonRGBA, _ := json.Marshal(dst.RGBA)
 		if string(jsonRGBA) == "{}" { // empty struct
 			dst.RGBA = nil
 		} else {
-			if err = validator.Validate(dst.RGBA); err != nil {
-				dst.RGBA = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.RGBA = nil
 	}
 
 	// try to unmarshal data into VariableAlias
-	err = newStrictDecoder(data).Decode(&dst.VariableAlias)
+	err = json.Unmarshal(data, &dst.VariableAlias)
 	if err == nil {
 		jsonVariableAlias, _ := json.Marshal(dst.VariableAlias)
 		if string(jsonVariableAlias) == "{}" { // empty struct
 			dst.VariableAlias = nil
 		} else {
-			if err = validator.Validate(dst.VariableAlias); err != nil {
-				dst.VariableAlias = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.VariableAlias = nil
 	}
 
 	// try to unmarshal data into Bool
-	err = newStrictDecoder(data).Decode(&dst.Bool)
+	err = json.Unmarshal(data, &dst.Bool)
 	if err == nil {
 		jsonBool, _ := json.Marshal(dst.Bool)
 		if string(jsonBool) == "{}" { // empty struct
 			dst.Bool = nil
 		} else {
-			if err = validator.Validate(dst.Bool); err != nil {
-				dst.Bool = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.Bool = nil
 	}
 
 	// try to unmarshal data into Float32
-	err = newStrictDecoder(data).Decode(&dst.Float32)
+	err = json.Unmarshal(data, &dst.Float32)
 	if err == nil {
 		jsonFloat32, _ := json.Marshal(dst.Float32)
 		if string(jsonFloat32) == "{}" { // empty struct
 			dst.Float32 = nil
 		} else {
-			if err = validator.Validate(dst.Float32); err != nil {
-				dst.Float32 = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.Float32 = nil
 	}
 
 	// try to unmarshal data into String
-	err = newStrictDecoder(data).Decode(&dst.String)
+	err = json.Unmarshal(data, &dst.String)
 	if err == nil {
 		jsonString, _ := json.Marshal(dst.String)
 		if string(jsonString) == "{}" { // empty struct
 			dst.String = nil
 		} else {
-			if err = validator.Validate(dst.String); err != nil {
-				dst.String = nil
-			} else {
-				match++
-			}
+			match++
 		}
 	} else {
 		dst.String = nil

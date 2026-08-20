@@ -2,6 +2,7 @@ package figma_test
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -10,6 +11,16 @@ import (
 	figma "github.com/dataiads/go-figma-api"
 	"golang.org/x/oauth2"
 )
+
+func TestNodeUsesTypeDiscriminator(t *testing.T) {
+	var node figma.Node
+	if err := json.Unmarshal([]byte(`{"id":"1:2","name":"Frame","type":"FRAME","scrollBehavior":"SCROLLS","blendMode":"PASS_THROUGH","children":[],"absoluteBoundingBox":{"x":0,"y":0,"width":100,"height":100},"absoluteRenderBounds":{"x":0,"y":0,"width":100,"height":100},"clipsContent":false,"fills":[],"effects":[]}`), &node); err != nil {
+		t.Fatal(err)
+	}
+	if node.FrameNode == nil || node.FrameNode.Id != "1:2" {
+		t.Fatalf("decoded node = %#v", node)
+	}
+}
 
 func TestFilesAPI(t *testing.T) {
 	t.Parallel()
