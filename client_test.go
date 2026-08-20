@@ -39,7 +39,7 @@ func TestFilesAPI(t *testing.T) {
 			if got := r.URL.Query().Get("geometry"); got != "paths" {
 				t.Errorf("geometry = %q", got)
 			}
-			fmt.Fprint(w, `{"name":"Design","role":"viewer","lastModified":"2026-08-20T00:00:00Z","editorType":"figma","thumbnailUrl":"https://example.com/thumbnail.png","version":"1","nodes":{}}`)
+			fmt.Fprint(w, `{"name":"Design","role":"viewer","lastModified":"2026-08-20T00:00:00Z","editorType":"figma","thumbnailUrl":"https://example.com/thumbnail.png","version":"1","linkAccess":"view","nodes":{}}`)
 		case "/v1/images/file-key":
 			if got := r.URL.Query().Get("ids"); got != "1:2" {
 				t.Errorf("ids = %q", got)
@@ -69,6 +69,9 @@ func TestFilesAPI(t *testing.T) {
 	}
 	if nodes.Name != "Design" {
 		t.Errorf("name = %q", nodes.Name)
+	}
+	if nodes.GetLinkAccess() != "view" {
+		t.Errorf("link access = %q", nodes.GetLinkAccess())
 	}
 
 	images, _, err := client.FilesAPI.GetImages(ctx, "file-key").Ids("1:2").Format("png").Scale(1).Execute()

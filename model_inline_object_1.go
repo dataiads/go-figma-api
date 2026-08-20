@@ -34,6 +34,8 @@ type InlineObject1 struct {
 	ThumbnailUrl string `json:"thumbnailUrl"`
 	// The version number of the file. This number is incremented when a file is modified and can be used to check if the file has changed between requests.
 	Version string `json:"version"`
+	// The share permission level of the file link.
+	LinkAccess *string `json:"linkAccess,omitempty"`
 	// A mapping from node IDs to node metadata.
 	Nodes map[string]InlineObject1NodesValue `json:"nodes"`
 }
@@ -208,6 +210,38 @@ func (o *InlineObject1) SetVersion(v string) {
 	o.Version = v
 }
 
+// GetLinkAccess returns the LinkAccess field value if set, zero value otherwise.
+func (o *InlineObject1) GetLinkAccess() string {
+	if o == nil || IsNil(o.LinkAccess) {
+		var ret string
+		return ret
+	}
+	return *o.LinkAccess
+}
+
+// GetLinkAccessOk returns a tuple with the LinkAccess field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *InlineObject1) GetLinkAccessOk() (*string, bool) {
+	if o == nil || IsNil(o.LinkAccess) {
+		return nil, false
+	}
+	return o.LinkAccess, true
+}
+
+// HasLinkAccess returns a boolean if a field has been set.
+func (o *InlineObject1) HasLinkAccess() bool {
+	if o != nil && !IsNil(o.LinkAccess) {
+		return true
+	}
+
+	return false
+}
+
+// SetLinkAccess gets a reference to the given string and assigns it to the LinkAccess field.
+func (o *InlineObject1) SetLinkAccess(v string) {
+	o.LinkAccess = &v
+}
+
 // GetNodes returns the Nodes field value
 func (o *InlineObject1) GetNodes() map[string]InlineObject1NodesValue {
 	if o == nil {
@@ -248,6 +282,9 @@ func (o InlineObject1) ToMap() (map[string]interface{}, error) {
 	toSerialize["editorType"] = o.EditorType
 	toSerialize["thumbnailUrl"] = o.ThumbnailUrl
 	toSerialize["version"] = o.Version
+	if !IsNil(o.LinkAccess) {
+		toSerialize["linkAccess"] = o.LinkAccess
+	}
 	toSerialize["nodes"] = o.Nodes
 	return toSerialize, nil
 }

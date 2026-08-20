@@ -805,6 +805,15 @@ components:
             file is modified and can be used to check if the file has changed
             between requests.
           type: string
+        linkAccess:
+          description: The share permission level of the file link.
+          enum:
+            - inherit
+            - view
+            - edit
+            - org_view
+            - org_edit
+          type: string
         nodes:
           additionalProperties:
             $ref: "#/components/schemas/inline_object_1_nodes_value"
