@@ -5499,6 +5499,10 @@ components:
                 $ref: "#/components/schemas/Path"
               type: array
               default: null
+            vectorNetwork:
+              additionalProperties: true
+              description: The vector network data returned for the node.
+              type: object
             strokeCap:
               default: NONE
               description: A string enum describing the end caps of vector paths.

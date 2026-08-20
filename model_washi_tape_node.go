@@ -125,6 +125,8 @@ type WashiTapeNode struct {
 	FillGeometry []Path `json:"fillGeometry,omitempty"`
 	// Only specified if parameter `geometry=paths` is used. An array of paths representing the object stroke.
 	StrokeGeometry []Path `json:"strokeGeometry,omitempty"`
+	// The vector network data returned for the node.
+	VectorNetwork map[string]interface{} `json:"vectorNetwork,omitempty"`
 	// A string enum describing the end caps of vector paths.
 	StrokeCap *string `json:"strokeCap,omitempty"`
 	// Only valid if `strokeJoin` is \"MITER\". The corner angle, in degrees, below which `strokeJoin` will be set to \"BEVEL\" to avoid super sharp corners. By default this is 28.96 degrees.
@@ -1880,6 +1882,38 @@ func (o *WashiTapeNode) SetStrokeGeometry(v []Path) {
 	o.StrokeGeometry = v
 }
 
+// GetVectorNetwork returns the VectorNetwork field value if set, zero value otherwise.
+func (o *WashiTapeNode) GetVectorNetwork() map[string]interface{} {
+	if o == nil || IsNil(o.VectorNetwork) {
+		var ret map[string]interface{}
+		return ret
+	}
+	return o.VectorNetwork
+}
+
+// GetVectorNetworkOk returns a tuple with the VectorNetwork field value if set, nil otherwise
+// and a boolean to check if the value has been set.
+func (o *WashiTapeNode) GetVectorNetworkOk() (map[string]interface{}, bool) {
+	if o == nil || IsNil(o.VectorNetwork) {
+		return map[string]interface{}{}, false
+	}
+	return o.VectorNetwork, true
+}
+
+// HasVectorNetwork returns a boolean if a field has been set.
+func (o *WashiTapeNode) HasVectorNetwork() bool {
+	if o != nil && !IsNil(o.VectorNetwork) {
+		return true
+	}
+
+	return false
+}
+
+// SetVectorNetwork gets a reference to the given map[string]interface{} and assigns it to the VectorNetwork field.
+func (o *WashiTapeNode) SetVectorNetwork(v map[string]interface{}) {
+	o.VectorNetwork = v
+}
+
 // GetStrokeCap returns the StrokeCap field value if set, zero value otherwise.
 func (o *WashiTapeNode) GetStrokeCap() string {
 	if o == nil || IsNil(o.StrokeCap) {
@@ -2376,6 +2410,9 @@ func (o WashiTapeNode) ToMap() (map[string]interface{}, error) {
 	}
 	if !IsNil(o.StrokeGeometry) {
 		toSerialize["strokeGeometry"] = o.StrokeGeometry
+	}
+	if !IsNil(o.VectorNetwork) {
+		toSerialize["vectorNetwork"] = o.VectorNetwork
 	}
 	if !IsNil(o.StrokeCap) {
 		toSerialize["strokeCap"] = o.StrokeCap
