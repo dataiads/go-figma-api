@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -46,7 +45,8 @@ type HasGeometryTrait struct {
 	// A string enum describing the end caps of vector paths.
 	StrokeCap *string `json:"strokeCap,omitempty"`
 	// Only valid if `strokeJoin` is \"MITER\". The corner angle, in degrees, below which `strokeJoin` will be set to \"BEVEL\" to avoid super sharp corners. By default this is 28.96 degrees.
-	StrokeMiterAngle *float32 `json:"strokeMiterAngle,omitempty"`
+	StrokeMiterAngle     *float32 `json:"strokeMiterAngle,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _HasGeometryTrait HasGeometryTrait
@@ -540,6 +540,11 @@ func (o HasGeometryTrait) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.StrokeMiterAngle) {
 		toSerialize["strokeMiterAngle"] = o.StrokeMiterAngle
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -567,15 +572,32 @@ func (o *HasGeometryTrait) UnmarshalJSON(data []byte) (err error) {
 
 	varHasGeometryTrait := _HasGeometryTrait{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varHasGeometryTrait)
+	err = json.Unmarshal(data, &varHasGeometryTrait)
 
 	if err != nil {
 		return err
 	}
 
 	*o = HasGeometryTrait(varHasGeometryTrait)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "fills")
+		delete(additionalProperties, "styles")
+		delete(additionalProperties, "strokes")
+		delete(additionalProperties, "strokeWeight")
+		delete(additionalProperties, "strokeAlign")
+		delete(additionalProperties, "strokeJoin")
+		delete(additionalProperties, "strokeDashes")
+		delete(additionalProperties, "fillOverrideTable")
+		delete(additionalProperties, "fillGeometry")
+		delete(additionalProperties, "strokeGeometry")
+		delete(additionalProperties, "vectorNetwork")
+		delete(additionalProperties, "strokeCap")
+		delete(additionalProperties, "strokeMiterAngle")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

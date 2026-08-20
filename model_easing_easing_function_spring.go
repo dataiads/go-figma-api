@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -21,9 +20,10 @@ var _ MappedNullable = &EasingEasingFunctionSpring{}
 
 // EasingEasingFunctionSpring A spring function that defines the easing.
 type EasingEasingFunctionSpring struct {
-	Mass      float32 `json:"mass"`
-	Stiffness float32 `json:"stiffness"`
-	Damping   float32 `json:"damping"`
+	Mass                 float32 `json:"mass"`
+	Stiffness            float32 `json:"stiffness"`
+	Damping              float32 `json:"damping"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _EasingEasingFunctionSpring EasingEasingFunctionSpring
@@ -133,6 +133,11 @@ func (o EasingEasingFunctionSpring) ToMap() (map[string]interface{}, error) {
 	toSerialize["mass"] = o.Mass
 	toSerialize["stiffness"] = o.Stiffness
 	toSerialize["damping"] = o.Damping
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -162,15 +167,22 @@ func (o *EasingEasingFunctionSpring) UnmarshalJSON(data []byte) (err error) {
 
 	varEasingEasingFunctionSpring := _EasingEasingFunctionSpring{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varEasingEasingFunctionSpring)
+	err = json.Unmarshal(data, &varEasingEasingFunctionSpring)
 
 	if err != nil {
 		return err
 	}
 
 	*o = EasingEasingFunctionSpring(varEasingEasingFunctionSpring)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "mass")
+		delete(additionalProperties, "stiffness")
+		delete(additionalProperties, "damping")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

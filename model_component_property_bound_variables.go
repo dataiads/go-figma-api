@@ -19,8 +19,11 @@ var _ MappedNullable = &ComponentPropertyBoundVariables{}
 
 // ComponentPropertyBoundVariables The variables bound to a particular field on this component property
 type ComponentPropertyBoundVariables struct {
-	Value *VariableAlias `json:"value,omitempty"`
+	Value                *VariableAlias `json:"value,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ComponentPropertyBoundVariables ComponentPropertyBoundVariables
 
 // NewComponentPropertyBoundVariables instantiates a new ComponentPropertyBoundVariables object
 // This constructor will assign default values to properties that have it defined,
@@ -84,7 +87,33 @@ func (o ComponentPropertyBoundVariables) ToMap() (map[string]interface{}, error)
 	if !IsNil(o.Value) {
 		toSerialize["value"] = o.Value
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ComponentPropertyBoundVariables) UnmarshalJSON(data []byte) (err error) {
+	varComponentPropertyBoundVariables := _ComponentPropertyBoundVariables{}
+
+	err = json.Unmarshal(data, &varComponentPropertyBoundVariables)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ComponentPropertyBoundVariables(varComponentPropertyBoundVariables)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "value")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableComponentPropertyBoundVariables struct {

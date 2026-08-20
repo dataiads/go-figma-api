@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -24,7 +23,8 @@ type FlowStartingPoint struct {
 	// Unique identifier specifying the frame.
 	NodeId string `json:"nodeId"`
 	// Name of flow.
-	Name string `json:"name"`
+	Name                 string `json:"name"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _FlowStartingPoint FlowStartingPoint
@@ -108,6 +108,11 @@ func (o FlowStartingPoint) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["nodeId"] = o.NodeId
 	toSerialize["name"] = o.Name
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -136,15 +141,21 @@ func (o *FlowStartingPoint) UnmarshalJSON(data []byte) (err error) {
 
 	varFlowStartingPoint := _FlowStartingPoint{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varFlowStartingPoint)
+	err = json.Unmarshal(data, &varFlowStartingPoint)
 
 	if err != nil {
 		return err
 	}
 
 	*o = FlowStartingPoint(varFlowStartingPoint)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "nodeId")
+		delete(additionalProperties, "name")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

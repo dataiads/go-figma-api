@@ -19,12 +19,15 @@ var _ MappedNullable = &BaseShadowEffectBoundVariables{}
 
 // BaseShadowEffectBoundVariables The variables bound to a particular field on this shadow effect
 type BaseShadowEffectBoundVariables struct {
-	Radius  *VariableAlias `json:"radius,omitempty"`
-	Spread  *VariableAlias `json:"spread,omitempty"`
-	Color   *VariableAlias `json:"color,omitempty"`
-	OffsetX *VariableAlias `json:"offsetX,omitempty"`
-	OffsetY *VariableAlias `json:"offsetY,omitempty"`
+	Radius               *VariableAlias `json:"radius,omitempty"`
+	Spread               *VariableAlias `json:"spread,omitempty"`
+	Color                *VariableAlias `json:"color,omitempty"`
+	OffsetX              *VariableAlias `json:"offsetX,omitempty"`
+	OffsetY              *VariableAlias `json:"offsetY,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _BaseShadowEffectBoundVariables BaseShadowEffectBoundVariables
 
 // NewBaseShadowEffectBoundVariables instantiates a new BaseShadowEffectBoundVariables object
 // This constructor will assign default values to properties that have it defined,
@@ -228,7 +231,37 @@ func (o BaseShadowEffectBoundVariables) ToMap() (map[string]interface{}, error) 
 	if !IsNil(o.OffsetY) {
 		toSerialize["offsetY"] = o.OffsetY
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *BaseShadowEffectBoundVariables) UnmarshalJSON(data []byte) (err error) {
+	varBaseShadowEffectBoundVariables := _BaseShadowEffectBoundVariables{}
+
+	err = json.Unmarshal(data, &varBaseShadowEffectBoundVariables)
+
+	if err != nil {
+		return err
+	}
+
+	*o = BaseShadowEffectBoundVariables(varBaseShadowEffectBoundVariables)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "radius")
+		delete(additionalProperties, "spread")
+		delete(additionalProperties, "color")
+		delete(additionalProperties, "offsetX")
+		delete(additionalProperties, "offsetY")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableBaseShadowEffectBoundVariables struct {

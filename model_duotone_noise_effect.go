@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -36,7 +35,8 @@ type DuotoneNoiseEffect struct {
 	// The string literal 'DUOTONE' representing the noise type.
 	NoiseType string `json:"noiseType"`
 	// The secondary color of the noise effect
-	SecondaryColor RGBA `json:"secondaryColor"`
+	SecondaryColor       RGBA `json:"secondaryColor"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _DuotoneNoiseEffect DuotoneNoiseEffect
@@ -276,6 +276,11 @@ func (o DuotoneNoiseEffect) ToMap() (map[string]interface{}, error) {
 	toSerialize["density"] = o.Density
 	toSerialize["noiseType"] = o.NoiseType
 	toSerialize["secondaryColor"] = o.SecondaryColor
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -310,15 +315,27 @@ func (o *DuotoneNoiseEffect) UnmarshalJSON(data []byte) (err error) {
 
 	varDuotoneNoiseEffect := _DuotoneNoiseEffect{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varDuotoneNoiseEffect)
+	err = json.Unmarshal(data, &varDuotoneNoiseEffect)
 
 	if err != nil {
 		return err
 	}
 
 	*o = DuotoneNoiseEffect(varDuotoneNoiseEffect)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "color")
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "blendMode")
+		delete(additionalProperties, "noiseSize")
+		delete(additionalProperties, "density")
+		delete(additionalProperties, "noiseType")
+		delete(additionalProperties, "secondaryColor")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

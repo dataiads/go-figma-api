@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -120,7 +119,8 @@ type TableNode struct {
 	// Opacity of the node
 	Opacity *float32 `json:"opacity,omitempty"`
 	// An array of export settings representing images to export from the node.
-	ExportSettings []ExportSetting `json:"exportSettings,omitempty"`
+	ExportSettings       []ExportSetting `json:"exportSettings,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _TableNode TableNode
@@ -1908,6 +1908,11 @@ func (o TableNode) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ExportSettings) {
 		toSerialize["exportSettings"] = o.ExportSettings
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -1943,15 +1948,69 @@ func (o *TableNode) UnmarshalJSON(data []byte) (err error) {
 
 	varTableNode := _TableNode{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varTableNode)
+	err = json.Unmarshal(data, &varTableNode)
 
 	if err != nil {
 		return err
 	}
 
 	*o = TableNode(varTableNode)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "id")
+		delete(additionalProperties, "name")
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "locked")
+		delete(additionalProperties, "isFixed")
+		delete(additionalProperties, "scrollBehavior")
+		delete(additionalProperties, "rotation")
+		delete(additionalProperties, "componentPropertyReferences")
+		delete(additionalProperties, "pluginData")
+		delete(additionalProperties, "sharedPluginData")
+		delete(additionalProperties, "boundVariables")
+		delete(additionalProperties, "explicitVariableModes")
+		delete(additionalProperties, "children")
+		delete(additionalProperties, "absoluteBoundingBox")
+		delete(additionalProperties, "absoluteRenderBounds")
+		delete(additionalProperties, "preserveRatio")
+		delete(additionalProperties, "constraints")
+		delete(additionalProperties, "relativeTransform")
+		delete(additionalProperties, "size")
+		delete(additionalProperties, "layoutAlign")
+		delete(additionalProperties, "layoutGrow")
+		delete(additionalProperties, "layoutPositioning")
+		delete(additionalProperties, "minWidth")
+		delete(additionalProperties, "maxWidth")
+		delete(additionalProperties, "minHeight")
+		delete(additionalProperties, "maxHeight")
+		delete(additionalProperties, "layoutSizingHorizontal")
+		delete(additionalProperties, "layoutSizingVertical")
+		delete(additionalProperties, "gridRowCount")
+		delete(additionalProperties, "gridColumnCount")
+		delete(additionalProperties, "gridRowGap")
+		delete(additionalProperties, "gridColumnGap")
+		delete(additionalProperties, "gridColumnsSizing")
+		delete(additionalProperties, "gridRowsSizing")
+		delete(additionalProperties, "gridChildHorizontalAlign")
+		delete(additionalProperties, "gridChildVerticalAlign")
+		delete(additionalProperties, "gridRowSpan")
+		delete(additionalProperties, "gridColumnSpan")
+		delete(additionalProperties, "gridRowAnchorIndex")
+		delete(additionalProperties, "gridColumnAnchorIndex")
+		delete(additionalProperties, "strokes")
+		delete(additionalProperties, "strokeWeight")
+		delete(additionalProperties, "strokeAlign")
+		delete(additionalProperties, "strokeJoin")
+		delete(additionalProperties, "strokeDashes")
+		delete(additionalProperties, "effects")
+		delete(additionalProperties, "blendMode")
+		delete(additionalProperties, "opacity")
+		delete(additionalProperties, "exportSettings")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

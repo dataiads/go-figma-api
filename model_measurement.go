@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -26,7 +25,8 @@ type Measurement struct {
 	End    MeasurementStartEnd `json:"end"`
 	Offset MeasurementOffset   `json:"offset"`
 	// When manually overridden, the displayed value of the measurement
-	FreeText *string `json:"freeText,omitempty"`
+	FreeText             *string `json:"freeText,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _Measurement Measurement
@@ -197,6 +197,11 @@ func (o Measurement) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.FreeText) {
 		toSerialize["freeText"] = o.FreeText
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -227,15 +232,24 @@ func (o *Measurement) UnmarshalJSON(data []byte) (err error) {
 
 	varMeasurement := _Measurement{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varMeasurement)
+	err = json.Unmarshal(data, &varMeasurement)
 
 	if err != nil {
 		return err
 	}
 
 	*o = Measurement(varMeasurement)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "id")
+		delete(additionalProperties, "start")
+		delete(additionalProperties, "end")
+		delete(additionalProperties, "offset")
+		delete(additionalProperties, "freeText")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

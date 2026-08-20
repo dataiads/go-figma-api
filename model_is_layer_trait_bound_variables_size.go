@@ -19,9 +19,12 @@ var _ MappedNullable = &IsLayerTraitBoundVariablesSize{}
 
 // IsLayerTraitBoundVariablesSize struct for IsLayerTraitBoundVariablesSize
 type IsLayerTraitBoundVariablesSize struct {
-	X *VariableAlias `json:"x,omitempty"`
-	Y *VariableAlias `json:"y,omitempty"`
+	X                    *VariableAlias `json:"x,omitempty"`
+	Y                    *VariableAlias `json:"y,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _IsLayerTraitBoundVariablesSize IsLayerTraitBoundVariablesSize
 
 // NewIsLayerTraitBoundVariablesSize instantiates a new IsLayerTraitBoundVariablesSize object
 // This constructor will assign default values to properties that have it defined,
@@ -120,7 +123,34 @@ func (o IsLayerTraitBoundVariablesSize) ToMap() (map[string]interface{}, error) 
 	if !IsNil(o.Y) {
 		toSerialize["y"] = o.Y
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *IsLayerTraitBoundVariablesSize) UnmarshalJSON(data []byte) (err error) {
+	varIsLayerTraitBoundVariablesSize := _IsLayerTraitBoundVariablesSize{}
+
+	err = json.Unmarshal(data, &varIsLayerTraitBoundVariablesSize)
+
+	if err != nil {
+		return err
+	}
+
+	*o = IsLayerTraitBoundVariablesSize(varIsLayerTraitBoundVariablesSize)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "x")
+		delete(additionalProperties, "y")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableIsLayerTraitBoundVariablesSize struct {

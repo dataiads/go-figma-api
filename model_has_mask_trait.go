@@ -25,8 +25,11 @@ type HasMaskTrait struct {
 	MaskType *string `json:"maskType,omitempty"`
 	// True if maskType is VECTOR. This field is deprecated; use maskType instead.
 	// Deprecated
-	IsMaskOutline *bool `json:"isMaskOutline,omitempty"`
+	IsMaskOutline        *bool `json:"isMaskOutline,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _HasMaskTrait HasMaskTrait
 
 // NewHasMaskTrait instantiates a new HasMaskTrait object
 // This constructor will assign default values to properties that have it defined,
@@ -171,7 +174,35 @@ func (o HasMaskTrait) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.IsMaskOutline) {
 		toSerialize["isMaskOutline"] = o.IsMaskOutline
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *HasMaskTrait) UnmarshalJSON(data []byte) (err error) {
+	varHasMaskTrait := _HasMaskTrait{}
+
+	err = json.Unmarshal(data, &varHasMaskTrait)
+
+	if err != nil {
+		return err
+	}
+
+	*o = HasMaskTrait(varHasMaskTrait)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "isMask")
+		delete(additionalProperties, "maskType")
+		delete(additionalProperties, "isMaskOutline")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableHasMaskTrait struct {

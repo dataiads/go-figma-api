@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -21,8 +20,9 @@ var _ MappedNullable = &Expression{}
 
 // Expression Defines the [Expression](https://help.figma.com/hc/en-us/articles/15253194385943) object, which contains a list of `VariableData` objects strung together by operators (`ExpressionFunction`).
 type Expression struct {
-	ExpressionFunction  ExpressionFunction `json:"expressionFunction"`
-	ExpressionArguments []VariableData     `json:"expressionArguments"`
+	ExpressionFunction   ExpressionFunction `json:"expressionFunction"`
+	ExpressionArguments  []VariableData     `json:"expressionArguments"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _Expression Expression
@@ -106,6 +106,11 @@ func (o Expression) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["expressionFunction"] = o.ExpressionFunction
 	toSerialize["expressionArguments"] = o.ExpressionArguments
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -134,15 +139,21 @@ func (o *Expression) UnmarshalJSON(data []byte) (err error) {
 
 	varExpression := _Expression{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varExpression)
+	err = json.Unmarshal(data, &varExpression)
 
 	if err != nil {
 		return err
 	}
 
 	*o = Expression(varExpression)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "expressionFunction")
+		delete(additionalProperties, "expressionArguments")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -28,7 +27,8 @@ type Rectangle struct {
 	// Width of the rectangle.
 	Width float32 `json:"width"`
 	// Height of the rectangle.
-	Height float32 `json:"height"`
+	Height               float32 `json:"height"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _Rectangle Rectangle
@@ -164,6 +164,11 @@ func (o Rectangle) ToMap() (map[string]interface{}, error) {
 	toSerialize["y"] = o.Y
 	toSerialize["width"] = o.Width
 	toSerialize["height"] = o.Height
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -194,15 +199,23 @@ func (o *Rectangle) UnmarshalJSON(data []byte) (err error) {
 
 	varRectangle := _Rectangle{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varRectangle)
+	err = json.Unmarshal(data, &varRectangle)
 
 	if err != nil {
 		return err
 	}
 
 	*o = Rectangle(varRectangle)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "x")
+		delete(additionalProperties, "y")
+		delete(additionalProperties, "width")
+		delete(additionalProperties, "height")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

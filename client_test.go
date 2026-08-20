@@ -22,14 +22,18 @@ func TestNodeUsesTypeDiscriminator(t *testing.T) {
 	}
 }
 
-func TestNodeAllowsRectangleVectorNetwork(t *testing.T) {
+func TestNodePreservesKnownAndUnknownGeometryData(t *testing.T) {
 	var node figma.Node
-	err := json.Unmarshal([]byte(`{"id":"1:1","name":"Frame","type":"FRAME","scrollBehavior":"SCROLLS","blendMode":"PASS_THROUGH","children":[{"id":"1:2","name":"Rectangle","type":"RECTANGLE","scrollBehavior":"SCROLLS","blendMode":"NORMAL","absoluteBoundingBox":{"x":0,"y":0,"width":100,"height":100},"absoluteRenderBounds":{"x":0,"y":0,"width":100,"height":100},"fills":[],"effects":[],"vectorNetwork":{"vertices":[{"x":0,"y":0}],"segments":[],"regions":[]}}],"absoluteBoundingBox":{"x":0,"y":0,"width":100,"height":100},"absoluteRenderBounds":{"x":0,"y":0,"width":100,"height":100},"clipsContent":false,"fills":[],"effects":[]}`), &node)
+	err := json.Unmarshal([]byte(`{"id":"1:1","name":"Frame","type":"FRAME","scrollBehavior":"SCROLLS","blendMode":"PASS_THROUGH","children":[{"id":"1:2","name":"Rectangle","type":"RECTANGLE","scrollBehavior":"SCROLLS","blendMode":"NORMAL","absoluteBoundingBox":{"x":0,"y":0,"width":100,"height":100},"absoluteRenderBounds":{"x":0,"y":0,"width":100,"height":100},"fills":[],"effects":[],"vectorNetwork":{"vertices":[{"x":0,"y":0}],"segments":[],"regions":[]},"complexStrokeProperties":{}}],"absoluteBoundingBox":{"x":0,"y":0,"width":100,"height":100},"absoluteRenderBounds":{"x":0,"y":0,"width":100,"height":100},"clipsContent":false,"fills":[],"effects":[]}`), &node)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got := node.FrameNode.Children[0].RectangleNode.GetVectorNetwork(); len(got) != 3 {
+	rectangle := node.FrameNode.Children[0].RectangleNode
+	if got := rectangle.GetVectorNetwork(); len(got) != 3 {
 		t.Fatalf("vector network = %#v", got)
+	}
+	if _, ok := rectangle.AdditionalProperties["complexStrokeProperties"]; !ok {
+		t.Fatalf("additional properties = %#v", rectangle.AdditionalProperties)
 	}
 }
 

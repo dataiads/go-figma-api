@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -35,6 +34,7 @@ type NodeAction struct {
 	ResetScrollPosition *bool `json:"resetScrollPosition,omitempty"`
 	// Whether the state of any interactive components in the current screen or overlay reset when navigating to the destination. This is applicable if there are interactive components in the destination frame.
 	ResetInteractiveComponents *bool `json:"resetInteractiveComponents,omitempty"`
+	AdditionalProperties       map[string]interface{}
 }
 
 type _NodeAction NodeAction
@@ -345,6 +345,11 @@ func (o NodeAction) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ResetInteractiveComponents) {
 		toSerialize["resetInteractiveComponents"] = o.ResetInteractiveComponents
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -375,15 +380,28 @@ func (o *NodeAction) UnmarshalJSON(data []byte) (err error) {
 
 	varNodeAction := _NodeAction{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varNodeAction)
+	err = json.Unmarshal(data, &varNodeAction)
 
 	if err != nil {
 		return err
 	}
 
 	*o = NodeAction(varNodeAction)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "destinationId")
+		delete(additionalProperties, "navigation")
+		delete(additionalProperties, "transition")
+		delete(additionalProperties, "preserveScrollPosition")
+		delete(additionalProperties, "overlayRelativePosition")
+		delete(additionalProperties, "resetVideoPosition")
+		delete(additionalProperties, "resetScrollPosition")
+		delete(additionalProperties, "resetInteractiveComponents")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

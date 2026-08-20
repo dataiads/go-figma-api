@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -21,7 +20,8 @@ var _ MappedNullable = &ActionOneOf{}
 
 // ActionOneOf struct for ActionOneOf
 type ActionOneOf struct {
-	Type string `json:"type"`
+	Type                 string `json:"type"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _ActionOneOf ActionOneOf
@@ -79,6 +79,11 @@ func (o ActionOneOf) MarshalJSON() ([]byte, error) {
 func (o ActionOneOf) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["type"] = o.Type
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -106,15 +111,20 @@ func (o *ActionOneOf) UnmarshalJSON(data []byte) (err error) {
 
 	varActionOneOf := _ActionOneOf{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varActionOneOf)
+	err = json.Unmarshal(data, &varActionOneOf)
 
 	if err != nil {
 		return err
 	}
 
 	*o = ActionOneOf(varActionOneOf)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

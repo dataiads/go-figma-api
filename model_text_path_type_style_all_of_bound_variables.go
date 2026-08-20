@@ -19,12 +19,15 @@ var _ MappedNullable = &TextPathTypeStyleAllOfBoundVariables{}
 
 // TextPathTypeStyleAllOfBoundVariables The variables bound to a particular field on this style
 type TextPathTypeStyleAllOfBoundVariables struct {
-	FontFamily    *VariableAlias `json:"fontFamily,omitempty"`
-	FontSize      *VariableAlias `json:"fontSize,omitempty"`
-	FontStyle     *VariableAlias `json:"fontStyle,omitempty"`
-	FontWeight    *VariableAlias `json:"fontWeight,omitempty"`
-	LetterSpacing *VariableAlias `json:"letterSpacing,omitempty"`
+	FontFamily           *VariableAlias `json:"fontFamily,omitempty"`
+	FontSize             *VariableAlias `json:"fontSize,omitempty"`
+	FontStyle            *VariableAlias `json:"fontStyle,omitempty"`
+	FontWeight           *VariableAlias `json:"fontWeight,omitempty"`
+	LetterSpacing        *VariableAlias `json:"letterSpacing,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _TextPathTypeStyleAllOfBoundVariables TextPathTypeStyleAllOfBoundVariables
 
 // NewTextPathTypeStyleAllOfBoundVariables instantiates a new TextPathTypeStyleAllOfBoundVariables object
 // This constructor will assign default values to properties that have it defined,
@@ -228,7 +231,37 @@ func (o TextPathTypeStyleAllOfBoundVariables) ToMap() (map[string]interface{}, e
 	if !IsNil(o.LetterSpacing) {
 		toSerialize["letterSpacing"] = o.LetterSpacing
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *TextPathTypeStyleAllOfBoundVariables) UnmarshalJSON(data []byte) (err error) {
+	varTextPathTypeStyleAllOfBoundVariables := _TextPathTypeStyleAllOfBoundVariables{}
+
+	err = json.Unmarshal(data, &varTextPathTypeStyleAllOfBoundVariables)
+
+	if err != nil {
+		return err
+	}
+
+	*o = TextPathTypeStyleAllOfBoundVariables(varTextPathTypeStyleAllOfBoundVariables)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "fontFamily")
+		delete(additionalProperties, "fontSize")
+		delete(additionalProperties, "fontStyle")
+		delete(additionalProperties, "fontWeight")
+		delete(additionalProperties, "letterSpacing")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableTextPathTypeStyleAllOfBoundVariables struct {

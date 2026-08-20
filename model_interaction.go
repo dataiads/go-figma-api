@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -24,7 +23,8 @@ type Interaction struct {
 	// The user event that initiates the interaction.
 	Trigger Trigger `json:"trigger"`
 	// The actions that are performed when the trigger is activated.
-	Actions []Action `json:"actions,omitempty"`
+	Actions              []Action `json:"actions,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _Interaction Interaction
@@ -117,6 +117,11 @@ func (o Interaction) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Actions) {
 		toSerialize["actions"] = o.Actions
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -144,15 +149,21 @@ func (o *Interaction) UnmarshalJSON(data []byte) (err error) {
 
 	varInteraction := _Interaction{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varInteraction)
+	err = json.Unmarshal(data, &varInteraction)
 
 	if err != nil {
 		return err
 	}
 
 	*o = Interaction(varInteraction)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "trigger")
+		delete(additionalProperties, "actions")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -24,6 +23,7 @@ type SetVariableModeAction struct {
 	Type                 string  `json:"type"`
 	VariableCollectionId *string `json:"variableCollectionId,omitempty"`
 	VariableModeId       *string `json:"variableModeId,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _SetVariableModeAction SetVariableModeAction
@@ -151,6 +151,11 @@ func (o SetVariableModeAction) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.VariableModeId) {
 		toSerialize["variableModeId"] = o.VariableModeId
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -178,15 +183,22 @@ func (o *SetVariableModeAction) UnmarshalJSON(data []byte) (err error) {
 
 	varSetVariableModeAction := _SetVariableModeAction{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varSetVariableModeAction)
+	err = json.Unmarshal(data, &varSetVariableModeAction)
 
 	if err != nil {
 		return err
 	}
 
 	*o = SetVariableModeAction(varSetVariableModeAction)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "variableCollectionId")
+		delete(additionalProperties, "variableModeId")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

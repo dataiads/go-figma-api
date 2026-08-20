@@ -53,7 +53,10 @@ type IsLayerTraitBoundVariables struct {
 	Effects                 []VariableAlias                                    `json:"effects,omitempty"`
 	LayoutGrids             []VariableAlias                                    `json:"layoutGrids,omitempty"`
 	RectangleCornerRadii    *IsLayerTraitBoundVariablesRectangleCornerRadii    `json:"rectangleCornerRadii,omitempty"`
+	AdditionalProperties    map[string]interface{}
 }
+
+type _IsLayerTraitBoundVariables IsLayerTraitBoundVariables
 
 // NewIsLayerTraitBoundVariables instantiates a new IsLayerTraitBoundVariables object
 // This constructor will assign default values to properties that have it defined,
@@ -1272,7 +1275,66 @@ func (o IsLayerTraitBoundVariables) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.RectangleCornerRadii) {
 		toSerialize["rectangleCornerRadii"] = o.RectangleCornerRadii
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *IsLayerTraitBoundVariables) UnmarshalJSON(data []byte) (err error) {
+	varIsLayerTraitBoundVariables := _IsLayerTraitBoundVariables{}
+
+	err = json.Unmarshal(data, &varIsLayerTraitBoundVariables)
+
+	if err != nil {
+		return err
+	}
+
+	*o = IsLayerTraitBoundVariables(varIsLayerTraitBoundVariables)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "size")
+		delete(additionalProperties, "individualStrokeWeights")
+		delete(additionalProperties, "characters")
+		delete(additionalProperties, "itemSpacing")
+		delete(additionalProperties, "paddingLeft")
+		delete(additionalProperties, "paddingRight")
+		delete(additionalProperties, "paddingTop")
+		delete(additionalProperties, "paddingBottom")
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "topLeftRadius")
+		delete(additionalProperties, "topRightRadius")
+		delete(additionalProperties, "bottomLeftRadius")
+		delete(additionalProperties, "bottomRightRadius")
+		delete(additionalProperties, "minWidth")
+		delete(additionalProperties, "maxWidth")
+		delete(additionalProperties, "minHeight")
+		delete(additionalProperties, "maxHeight")
+		delete(additionalProperties, "counterAxisSpacing")
+		delete(additionalProperties, "opacity")
+		delete(additionalProperties, "fontFamily")
+		delete(additionalProperties, "fontSize")
+		delete(additionalProperties, "fontStyle")
+		delete(additionalProperties, "fontWeight")
+		delete(additionalProperties, "letterSpacing")
+		delete(additionalProperties, "lineHeight")
+		delete(additionalProperties, "paragraphSpacing")
+		delete(additionalProperties, "paragraphIndent")
+		delete(additionalProperties, "fills")
+		delete(additionalProperties, "strokes")
+		delete(additionalProperties, "componentProperties")
+		delete(additionalProperties, "textRangeFills")
+		delete(additionalProperties, "effects")
+		delete(additionalProperties, "layoutGrids")
+		delete(additionalProperties, "rectangleCornerRadii")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableIsLayerTraitBoundVariables struct {

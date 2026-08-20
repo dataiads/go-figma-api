@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -24,7 +23,8 @@ type MinimalFillsTrait struct {
 	// An array of fill paints applied to the node.
 	Fills []Paint `json:"fills"`
 	// A mapping of a StyleType to style ID (see Style) of styles present on this node. The style ID can be used to look up more information about the style in the top-level styles field.
-	Styles map[string]string `json:"styles,omitempty"`
+	Styles               map[string]string `json:"styles,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _MinimalFillsTrait MinimalFillsTrait
@@ -117,6 +117,11 @@ func (o MinimalFillsTrait) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Styles) {
 		toSerialize["styles"] = o.Styles
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -144,15 +149,21 @@ func (o *MinimalFillsTrait) UnmarshalJSON(data []byte) (err error) {
 
 	varMinimalFillsTrait := _MinimalFillsTrait{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varMinimalFillsTrait)
+	err = json.Unmarshal(data, &varMinimalFillsTrait)
 
 	if err != nil {
 		return err
 	}
 
 	*o = MinimalFillsTrait(varMinimalFillsTrait)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "fills")
+		delete(additionalProperties, "styles")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -38,6 +37,7 @@ type DropShadowEffect struct {
 	Type string `json:"type"`
 	// Whether to show the shadow behind translucent or transparent pixels
 	ShowShadowBehindNode bool `json:"showShadowBehindNode"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _DropShadowEffect DropShadowEffect
@@ -327,6 +327,11 @@ func (o DropShadowEffect) ToMap() (map[string]interface{}, error) {
 	}
 	toSerialize["type"] = o.Type
 	toSerialize["showShadowBehindNode"] = o.ShowShadowBehindNode
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -360,15 +365,28 @@ func (o *DropShadowEffect) UnmarshalJSON(data []byte) (err error) {
 
 	varDropShadowEffect := _DropShadowEffect{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varDropShadowEffect)
+	err = json.Unmarshal(data, &varDropShadowEffect)
 
 	if err != nil {
 		return err
 	}
 
 	*o = DropShadowEffect(varDropShadowEffect)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "color")
+		delete(additionalProperties, "blendMode")
+		delete(additionalProperties, "offset")
+		delete(additionalProperties, "radius")
+		delete(additionalProperties, "spread")
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "boundVariables")
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "showShadowBehindNode")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -47,6 +46,7 @@ type SliceNode struct {
 	BoundVariables   *IsLayerTraitBoundVariables `json:"boundVariables,omitempty"`
 	// A mapping of variable collection ID to mode ID representing the explicitly set modes for this node.
 	ExplicitVariableModes map[string]string `json:"explicitVariableModes,omitempty"`
+	AdditionalProperties  map[string]interface{}
 }
 
 type _SliceNode SliceNode
@@ -520,6 +520,11 @@ func (o SliceNode) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ExplicitVariableModes) {
 		toSerialize["explicitVariableModes"] = o.ExplicitVariableModes
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -550,15 +555,32 @@ func (o *SliceNode) UnmarshalJSON(data []byte) (err error) {
 
 	varSliceNode := _SliceNode{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varSliceNode)
+	err = json.Unmarshal(data, &varSliceNode)
 
 	if err != nil {
 		return err
 	}
 
 	*o = SliceNode(varSliceNode)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "id")
+		delete(additionalProperties, "name")
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "locked")
+		delete(additionalProperties, "isFixed")
+		delete(additionalProperties, "scrollBehavior")
+		delete(additionalProperties, "rotation")
+		delete(additionalProperties, "componentPropertyReferences")
+		delete(additionalProperties, "pluginData")
+		delete(additionalProperties, "sharedPluginData")
+		delete(additionalProperties, "boundVariables")
+		delete(additionalProperties, "explicitVariableModes")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

@@ -19,8 +19,11 @@ var _ MappedNullable = &BaseBlurEffectBoundVariables{}
 
 // BaseBlurEffectBoundVariables The variables bound to a particular field on this blur effect
 type BaseBlurEffectBoundVariables struct {
-	Radius *VariableAlias `json:"radius,omitempty"`
+	Radius               *VariableAlias `json:"radius,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _BaseBlurEffectBoundVariables BaseBlurEffectBoundVariables
 
 // NewBaseBlurEffectBoundVariables instantiates a new BaseBlurEffectBoundVariables object
 // This constructor will assign default values to properties that have it defined,
@@ -84,7 +87,33 @@ func (o BaseBlurEffectBoundVariables) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Radius) {
 		toSerialize["radius"] = o.Radius
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *BaseBlurEffectBoundVariables) UnmarshalJSON(data []byte) (err error) {
+	varBaseBlurEffectBoundVariables := _BaseBlurEffectBoundVariables{}
+
+	err = json.Unmarshal(data, &varBaseBlurEffectBoundVariables)
+
+	if err != nil {
+		return err
+	}
+
+	*o = BaseBlurEffectBoundVariables(varBaseBlurEffectBoundVariables)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "radius")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableBaseBlurEffectBoundVariables struct {

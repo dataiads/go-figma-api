@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -21,8 +20,9 @@ var _ MappedNullable = &AfterTimeoutTrigger{}
 
 // AfterTimeoutTrigger struct for AfterTimeoutTrigger
 type AfterTimeoutTrigger struct {
-	Type    string  `json:"type"`
-	Timeout float32 `json:"timeout"`
+	Type                 string  `json:"type"`
+	Timeout              float32 `json:"timeout"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _AfterTimeoutTrigger AfterTimeoutTrigger
@@ -106,6 +106,11 @@ func (o AfterTimeoutTrigger) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["type"] = o.Type
 	toSerialize["timeout"] = o.Timeout
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -134,15 +139,21 @@ func (o *AfterTimeoutTrigger) UnmarshalJSON(data []byte) (err error) {
 
 	varAfterTimeoutTrigger := _AfterTimeoutTrigger{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varAfterTimeoutTrigger)
+	err = json.Unmarshal(data, &varAfterTimeoutTrigger)
 
 	if err != nil {
 		return err
 	}
 
 	*o = AfterTimeoutTrigger(varAfterTimeoutTrigger)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "timeout")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

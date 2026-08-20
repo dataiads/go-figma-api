@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -26,7 +25,8 @@ type Hyperlink struct {
 	// The URL that the hyperlink points to, if `type` is `URL`.
 	Url *string `json:"url,omitempty"`
 	// The ID of the node that the hyperlink points to, if `type` is `NODE`.
-	NodeID *string `json:"nodeID,omitempty"`
+	NodeID               *string `json:"nodeID,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _Hyperlink Hyperlink
@@ -154,6 +154,11 @@ func (o Hyperlink) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.NodeID) {
 		toSerialize["nodeID"] = o.NodeID
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -181,15 +186,22 @@ func (o *Hyperlink) UnmarshalJSON(data []byte) (err error) {
 
 	varHyperlink := _Hyperlink{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varHyperlink)
+	err = json.Unmarshal(data, &varHyperlink)
 
 	if err != nil {
 		return err
 	}
 
 	*o = Hyperlink(varHyperlink)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "url")
+		delete(additionalProperties, "nodeID")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

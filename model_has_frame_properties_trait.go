@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -63,6 +62,7 @@ type HasFramePropertiesTrait struct {
 	CounterAxisSpacing *float32 `json:"counterAxisSpacing,omitempty"`
 	// Determines how the auto-layout frame’s wrapped tracks should be aligned in the counter axis direction. This property is only applicable for auto-layout frames with `layoutWrap: \"WRAP\"`.
 	CounterAxisAlignContent *string `json:"counterAxisAlignContent,omitempty"`
+	AdditionalProperties    map[string]interface{}
 }
 
 type _HasFramePropertiesTrait HasFramePropertiesTrait
@@ -847,6 +847,11 @@ func (o HasFramePropertiesTrait) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.CounterAxisAlignContent) {
 		toSerialize["counterAxisAlignContent"] = o.CounterAxisAlignContent
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -874,15 +879,39 @@ func (o *HasFramePropertiesTrait) UnmarshalJSON(data []byte) (err error) {
 
 	varHasFramePropertiesTrait := _HasFramePropertiesTrait{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varHasFramePropertiesTrait)
+	err = json.Unmarshal(data, &varHasFramePropertiesTrait)
 
 	if err != nil {
 		return err
 	}
 
 	*o = HasFramePropertiesTrait(varHasFramePropertiesTrait)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "clipsContent")
+		delete(additionalProperties, "background")
+		delete(additionalProperties, "backgroundColor")
+		delete(additionalProperties, "layoutGrids")
+		delete(additionalProperties, "overflowDirection")
+		delete(additionalProperties, "layoutMode")
+		delete(additionalProperties, "primaryAxisSizingMode")
+		delete(additionalProperties, "counterAxisSizingMode")
+		delete(additionalProperties, "primaryAxisAlignItems")
+		delete(additionalProperties, "counterAxisAlignItems")
+		delete(additionalProperties, "paddingLeft")
+		delete(additionalProperties, "paddingRight")
+		delete(additionalProperties, "paddingTop")
+		delete(additionalProperties, "paddingBottom")
+		delete(additionalProperties, "itemSpacing")
+		delete(additionalProperties, "itemReverseZIndex")
+		delete(additionalProperties, "strokesIncludedInLayout")
+		delete(additionalProperties, "layoutWrap")
+		delete(additionalProperties, "counterAxisSpacing")
+		delete(additionalProperties, "counterAxisAlignContent")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

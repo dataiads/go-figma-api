@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -132,7 +131,8 @@ type ConnectorNode struct {
 	// Connector line type.
 	ConnectorLineType ConnectorLineType `json:"connectorLineType"`
 	// Connector text background.
-	TextBackground *ConnectorTextBackground `json:"textBackground,omitempty"`
+	TextBackground       *ConnectorTextBackground `json:"textBackground,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _ConnectorNode ConnectorNode
@@ -2089,6 +2089,11 @@ func (o ConnectorNode) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.TextBackground) {
 		toSerialize["textBackground"] = o.TextBackground
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -2129,15 +2134,75 @@ func (o *ConnectorNode) UnmarshalJSON(data []byte) (err error) {
 
 	varConnectorNode := _ConnectorNode{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varConnectorNode)
+	err = json.Unmarshal(data, &varConnectorNode)
 
 	if err != nil {
 		return err
 	}
 
 	*o = ConnectorNode(varConnectorNode)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "id")
+		delete(additionalProperties, "name")
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "locked")
+		delete(additionalProperties, "isFixed")
+		delete(additionalProperties, "scrollBehavior")
+		delete(additionalProperties, "rotation")
+		delete(additionalProperties, "componentPropertyReferences")
+		delete(additionalProperties, "pluginData")
+		delete(additionalProperties, "sharedPluginData")
+		delete(additionalProperties, "boundVariables")
+		delete(additionalProperties, "explicitVariableModes")
+		delete(additionalProperties, "absoluteBoundingBox")
+		delete(additionalProperties, "absoluteRenderBounds")
+		delete(additionalProperties, "preserveRatio")
+		delete(additionalProperties, "constraints")
+		delete(additionalProperties, "relativeTransform")
+		delete(additionalProperties, "size")
+		delete(additionalProperties, "layoutAlign")
+		delete(additionalProperties, "layoutGrow")
+		delete(additionalProperties, "layoutPositioning")
+		delete(additionalProperties, "minWidth")
+		delete(additionalProperties, "maxWidth")
+		delete(additionalProperties, "minHeight")
+		delete(additionalProperties, "maxHeight")
+		delete(additionalProperties, "layoutSizingHorizontal")
+		delete(additionalProperties, "layoutSizingVertical")
+		delete(additionalProperties, "gridRowCount")
+		delete(additionalProperties, "gridColumnCount")
+		delete(additionalProperties, "gridRowGap")
+		delete(additionalProperties, "gridColumnGap")
+		delete(additionalProperties, "gridColumnsSizing")
+		delete(additionalProperties, "gridRowsSizing")
+		delete(additionalProperties, "gridChildHorizontalAlign")
+		delete(additionalProperties, "gridChildVerticalAlign")
+		delete(additionalProperties, "gridRowSpan")
+		delete(additionalProperties, "gridColumnSpan")
+		delete(additionalProperties, "gridRowAnchorIndex")
+		delete(additionalProperties, "gridColumnAnchorIndex")
+		delete(additionalProperties, "blendMode")
+		delete(additionalProperties, "opacity")
+		delete(additionalProperties, "effects")
+		delete(additionalProperties, "exportSettings")
+		delete(additionalProperties, "characters")
+		delete(additionalProperties, "strokes")
+		delete(additionalProperties, "strokeWeight")
+		delete(additionalProperties, "strokeAlign")
+		delete(additionalProperties, "strokeJoin")
+		delete(additionalProperties, "strokeDashes")
+		delete(additionalProperties, "connectorStart")
+		delete(additionalProperties, "connectorEnd")
+		delete(additionalProperties, "connectorStartStrokeCap")
+		delete(additionalProperties, "connectorEndStrokeCap")
+		delete(additionalProperties, "connectorLineType")
+		delete(additionalProperties, "textBackground")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

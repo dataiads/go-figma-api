@@ -24,9 +24,12 @@ type TransitionSourceTrait struct {
 	// The duration of the prototyping transition on this node (in milliseconds). This will override the default transition duration on the prototype, for this node.
 	TransitionDuration *float32 `json:"transitionDuration,omitempty"`
 	// The easing curve used in the prototyping transition on this node.
-	TransitionEasing *EasingType   `json:"transitionEasing,omitempty"`
-	Interactions     []Interaction `json:"interactions,omitempty"`
+	TransitionEasing     *EasingType   `json:"transitionEasing,omitempty"`
+	Interactions         []Interaction `json:"interactions,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _TransitionSourceTrait TransitionSourceTrait
 
 // NewTransitionSourceTrait instantiates a new TransitionSourceTrait object
 // This constructor will assign default values to properties that have it defined,
@@ -195,7 +198,36 @@ func (o TransitionSourceTrait) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Interactions) {
 		toSerialize["interactions"] = o.Interactions
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *TransitionSourceTrait) UnmarshalJSON(data []byte) (err error) {
+	varTransitionSourceTrait := _TransitionSourceTrait{}
+
+	err = json.Unmarshal(data, &varTransitionSourceTrait)
+
+	if err != nil {
+		return err
+	}
+
+	*o = TransitionSourceTrait(varTransitionSourceTrait)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "transitionNodeID")
+		delete(additionalProperties, "transitionDuration")
+		delete(additionalProperties, "transitionEasing")
+		delete(additionalProperties, "interactions")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableTransitionSourceTrait struct {

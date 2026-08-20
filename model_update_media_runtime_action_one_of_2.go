@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -21,10 +20,11 @@ var _ MappedNullable = &UpdateMediaRuntimeActionOneOf2{}
 
 // UpdateMediaRuntimeActionOneOf2 An action that updates the runtime of a media node by skipping to a specific time.  The `destinationId` is the node ID of the media node to update. If `destinationId` is `null`, the action will update the media node that contains the action.  The `mediaAction` is the action to perform on the media node.  The `newTimestamp` is the new time to skip to in seconds.
 type UpdateMediaRuntimeActionOneOf2 struct {
-	Type          string  `json:"type"`
-	DestinationId *string `json:"destinationId,omitempty"`
-	MediaAction   string  `json:"mediaAction"`
-	NewTimestamp  float32 `json:"newTimestamp"`
+	Type                 string  `json:"type"`
+	DestinationId        *string `json:"destinationId,omitempty"`
+	MediaAction          string  `json:"mediaAction"`
+	NewTimestamp         float32 `json:"newTimestamp"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _UpdateMediaRuntimeActionOneOf2 UpdateMediaRuntimeActionOneOf2
@@ -169,6 +169,11 @@ func (o UpdateMediaRuntimeActionOneOf2) ToMap() (map[string]interface{}, error) 
 	}
 	toSerialize["mediaAction"] = o.MediaAction
 	toSerialize["newTimestamp"] = o.NewTimestamp
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -198,15 +203,23 @@ func (o *UpdateMediaRuntimeActionOneOf2) UnmarshalJSON(data []byte) (err error) 
 
 	varUpdateMediaRuntimeActionOneOf2 := _UpdateMediaRuntimeActionOneOf2{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varUpdateMediaRuntimeActionOneOf2)
+	err = json.Unmarshal(data, &varUpdateMediaRuntimeActionOneOf2)
 
 	if err != nil {
 		return err
 	}
 
 	*o = UpdateMediaRuntimeActionOneOf2(varUpdateMediaRuntimeActionOneOf2)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "destinationId")
+		delete(additionalProperties, "mediaAction")
+		delete(additionalProperties, "newTimestamp")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -26,8 +25,9 @@ type BaseBlurEffect struct {
 	// Whether this blur is active.
 	Visible bool `json:"visible"`
 	// Radius of the blur effect
-	Radius         float32                       `json:"radius"`
-	BoundVariables *BaseBlurEffectBoundVariables `json:"boundVariables,omitempty"`
+	Radius               float32                       `json:"radius"`
+	BoundVariables       *BaseBlurEffectBoundVariables `json:"boundVariables,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _BaseBlurEffect BaseBlurEffect
@@ -172,6 +172,11 @@ func (o BaseBlurEffect) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.BoundVariables) {
 		toSerialize["boundVariables"] = o.BoundVariables
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -201,15 +206,23 @@ func (o *BaseBlurEffect) UnmarshalJSON(data []byte) (err error) {
 
 	varBaseBlurEffect := _BaseBlurEffect{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varBaseBlurEffect)
+	err = json.Unmarshal(data, &varBaseBlurEffect)
 
 	if err != nil {
 		return err
 	}
 
 	*o = BaseBlurEffect(varBaseBlurEffect)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "radius")
+		delete(additionalProperties, "boundVariables")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

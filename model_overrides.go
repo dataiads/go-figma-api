@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -24,7 +23,8 @@ type Overrides struct {
 	// A unique ID for a node.
 	Id string `json:"id"`
 	// An array of properties.
-	OverriddenFields []string `json:"overriddenFields"`
+	OverriddenFields     []string `json:"overriddenFields"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _Overrides Overrides
@@ -108,6 +108,11 @@ func (o Overrides) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["id"] = o.Id
 	toSerialize["overriddenFields"] = o.OverriddenFields
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -136,15 +141,21 @@ func (o *Overrides) UnmarshalJSON(data []byte) (err error) {
 
 	varOverrides := _Overrides{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varOverrides)
+	err = json.Unmarshal(data, &varOverrides)
 
 	if err != nil {
 		return err
 	}
 
 	*o = Overrides(varOverrides)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "id")
+		delete(additionalProperties, "overriddenFields")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

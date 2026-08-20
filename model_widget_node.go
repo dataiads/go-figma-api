@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -50,7 +49,8 @@ type WidgetNode struct {
 	// An array of export settings representing images to export from the node.
 	ExportSettings []ExportSetting `json:"exportSettings,omitempty"`
 	// An array of nodes that are direct children of this node
-	Children []SubcanvasNode `json:"children"`
+	Children             []SubcanvasNode `json:"children"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _WidgetNode WidgetNode
@@ -585,6 +585,11 @@ func (o WidgetNode) ToMap() (map[string]interface{}, error) {
 		toSerialize["exportSettings"] = o.ExportSettings
 	}
 	toSerialize["children"] = o.Children
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -616,15 +621,34 @@ func (o *WidgetNode) UnmarshalJSON(data []byte) (err error) {
 
 	varWidgetNode := _WidgetNode{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varWidgetNode)
+	err = json.Unmarshal(data, &varWidgetNode)
 
 	if err != nil {
 		return err
 	}
 
 	*o = WidgetNode(varWidgetNode)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "id")
+		delete(additionalProperties, "name")
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "locked")
+		delete(additionalProperties, "isFixed")
+		delete(additionalProperties, "scrollBehavior")
+		delete(additionalProperties, "rotation")
+		delete(additionalProperties, "componentPropertyReferences")
+		delete(additionalProperties, "pluginData")
+		delete(additionalProperties, "sharedPluginData")
+		delete(additionalProperties, "boundVariables")
+		delete(additionalProperties, "explicitVariableModes")
+		delete(additionalProperties, "exportSettings")
+		delete(additionalProperties, "children")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

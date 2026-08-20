@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -21,8 +20,9 @@ var _ MappedNullable = &OpenURLAction{}
 
 // OpenURLAction An action that opens a URL.
 type OpenURLAction struct {
-	Type string `json:"type"`
-	Url  string `json:"url"`
+	Type                 string `json:"type"`
+	Url                  string `json:"url"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _OpenURLAction OpenURLAction
@@ -106,6 +106,11 @@ func (o OpenURLAction) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["type"] = o.Type
 	toSerialize["url"] = o.Url
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -134,15 +139,21 @@ func (o *OpenURLAction) UnmarshalJSON(data []byte) (err error) {
 
 	varOpenURLAction := _OpenURLAction{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varOpenURLAction)
+	err = json.Unmarshal(data, &varOpenURLAction)
 
 	if err != nil {
 		return err
 	}
 
 	*o = OpenURLAction(varOpenURLAction)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "url")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

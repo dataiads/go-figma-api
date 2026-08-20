@@ -21,7 +21,10 @@ var _ MappedNullable = &IndividualStrokesTrait{}
 type IndividualStrokesTrait struct {
 	// An object including the top, bottom, left, and right stroke weights. Only returned if individual stroke weights are used.
 	IndividualStrokeWeights *StrokeWeights `json:"individualStrokeWeights,omitempty"`
+	AdditionalProperties    map[string]interface{}
 }
+
+type _IndividualStrokesTrait IndividualStrokesTrait
 
 // NewIndividualStrokesTrait instantiates a new IndividualStrokesTrait object
 // This constructor will assign default values to properties that have it defined,
@@ -85,7 +88,33 @@ func (o IndividualStrokesTrait) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.IndividualStrokeWeights) {
 		toSerialize["individualStrokeWeights"] = o.IndividualStrokeWeights
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *IndividualStrokesTrait) UnmarshalJSON(data []byte) (err error) {
+	varIndividualStrokesTrait := _IndividualStrokesTrait{}
+
+	err = json.Unmarshal(data, &varIndividualStrokesTrait)
+
+	if err != nil {
+		return err
+	}
+
+	*o = IndividualStrokesTrait(varIndividualStrokesTrait)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "individualStrokeWeights")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableIndividualStrokesTrait struct {

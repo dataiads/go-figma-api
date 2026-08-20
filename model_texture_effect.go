@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -30,7 +29,8 @@ type TextureEffect struct {
 	// The radius of the texture effect
 	Radius float32 `json:"radius"`
 	// Whether the texture is clipped to the shape
-	ClipToShape bool `json:"clipToShape"`
+	ClipToShape          bool `json:"clipToShape"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _TextureEffect TextureEffect
@@ -192,6 +192,11 @@ func (o TextureEffect) ToMap() (map[string]interface{}, error) {
 	toSerialize["noiseSize"] = o.NoiseSize
 	toSerialize["radius"] = o.Radius
 	toSerialize["clipToShape"] = o.ClipToShape
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -223,15 +228,24 @@ func (o *TextureEffect) UnmarshalJSON(data []byte) (err error) {
 
 	varTextureEffect := _TextureEffect{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varTextureEffect)
+	err = json.Unmarshal(data, &varTextureEffect)
 
 	if err != nil {
 		return err
 	}
 
 	*o = TextureEffect(varTextureEffect)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "noiseSize")
+		delete(additionalProperties, "radius")
+		delete(additionalProperties, "clipToShape")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

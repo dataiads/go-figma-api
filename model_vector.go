@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -24,7 +23,8 @@ type Vector struct {
 	// X coordinate of the vector.
 	X float32 `json:"x"`
 	// Y coordinate of the vector.
-	Y float32 `json:"y"`
+	Y                    float32 `json:"y"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _Vector Vector
@@ -108,6 +108,11 @@ func (o Vector) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["x"] = o.X
 	toSerialize["y"] = o.Y
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -136,15 +141,21 @@ func (o *Vector) UnmarshalJSON(data []byte) (err error) {
 
 	varVector := _Vector{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varVector)
+	err = json.Unmarshal(data, &varVector)
 
 	if err != nil {
 		return err
 	}
 
 	*o = Vector(varVector)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "x")
+		delete(additionalProperties, "y")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

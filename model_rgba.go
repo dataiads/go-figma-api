@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -28,7 +27,8 @@ type RGBA struct {
 	// Blue channel value, between 0 and 1.
 	B float32 `json:"b"`
 	// Alpha channel value, between 0 and 1.
-	A float32 `json:"a"`
+	A                    float32 `json:"a"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _RGBA RGBA
@@ -164,6 +164,11 @@ func (o RGBA) ToMap() (map[string]interface{}, error) {
 	toSerialize["g"] = o.G
 	toSerialize["b"] = o.B
 	toSerialize["a"] = o.A
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -194,15 +199,23 @@ func (o *RGBA) UnmarshalJSON(data []byte) (err error) {
 
 	varRGBA := _RGBA{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varRGBA)
+	err = json.Unmarshal(data, &varRGBA)
 
 	if err != nil {
 		return err
 	}
 
 	*o = RGBA(varRGBA)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "r")
+		delete(additionalProperties, "g")
+		delete(additionalProperties, "b")
+		delete(additionalProperties, "a")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

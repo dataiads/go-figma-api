@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -35,7 +34,8 @@ type InnerShadowEffect struct {
 	Visible        bool                            `json:"visible"`
 	BoundVariables *BaseShadowEffectBoundVariables `json:"boundVariables,omitempty"`
 	// A string literal representing the effect's type. Always check the type before reading other properties.
-	Type *string `json:"type,omitempty"`
+	Type                 *string `json:"type,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _InnerShadowEffect InnerShadowEffect
@@ -306,6 +306,11 @@ func (o InnerShadowEffect) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Type) {
 		toSerialize["type"] = o.Type
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -337,15 +342,27 @@ func (o *InnerShadowEffect) UnmarshalJSON(data []byte) (err error) {
 
 	varInnerShadowEffect := _InnerShadowEffect{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varInnerShadowEffect)
+	err = json.Unmarshal(data, &varInnerShadowEffect)
 
 	if err != nil {
 		return err
 	}
 
 	*o = InnerShadowEffect(varInnerShadowEffect)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "color")
+		delete(additionalProperties, "blendMode")
+		delete(additionalProperties, "offset")
+		delete(additionalProperties, "radius")
+		delete(additionalProperties, "spread")
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "boundVariables")
+		delete(additionalProperties, "type")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

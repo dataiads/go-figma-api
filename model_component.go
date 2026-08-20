@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -32,7 +31,8 @@ type Component struct {
 	// An array of documentation links attached to this component
 	DocumentationLinks []DocumentationLink `json:"documentationLinks"`
 	// Whether this component is a remote component that doesn't live in this file
-	Remote bool `json:"remote"`
+	Remote               bool `json:"remote"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _Component Component
@@ -229,6 +229,11 @@ func (o Component) ToMap() (map[string]interface{}, error) {
 	}
 	toSerialize["documentationLinks"] = o.DocumentationLinks
 	toSerialize["remote"] = o.Remote
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -260,15 +265,25 @@ func (o *Component) UnmarshalJSON(data []byte) (err error) {
 
 	varComponent := _Component{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varComponent)
+	err = json.Unmarshal(data, &varComponent)
 
 	if err != nil {
 		return err
 	}
 
 	*o = Component(varComponent)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "key")
+		delete(additionalProperties, "name")
+		delete(additionalProperties, "description")
+		delete(additionalProperties, "componentSetId")
+		delete(additionalProperties, "documentationLinks")
+		delete(additionalProperties, "remote")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

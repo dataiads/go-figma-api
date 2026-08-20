@@ -28,8 +28,11 @@ type MinimalStrokesTrait struct {
 	// A string enum with value of \"MITER\", \"BEVEL\", or \"ROUND\", describing how corners in vector paths are rendered.
 	StrokeJoin *string `json:"strokeJoin,omitempty"`
 	// An array of floating point numbers describing the pattern of dash length and gap lengths that the vector stroke will use when drawn.  For example a value of [1, 2] indicates that the stroke will be drawn with a dash of length 1 followed by a gap of length 2, repeated.
-	StrokeDashes []float32 `json:"strokeDashes,omitempty"`
+	StrokeDashes         []float32 `json:"strokeDashes,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _MinimalStrokesTrait MinimalStrokesTrait
 
 // NewMinimalStrokesTrait instantiates a new MinimalStrokesTrait object
 // This constructor will assign default values to properties that have it defined,
@@ -241,7 +244,37 @@ func (o MinimalStrokesTrait) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.StrokeDashes) {
 		toSerialize["strokeDashes"] = o.StrokeDashes
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *MinimalStrokesTrait) UnmarshalJSON(data []byte) (err error) {
+	varMinimalStrokesTrait := _MinimalStrokesTrait{}
+
+	err = json.Unmarshal(data, &varMinimalStrokesTrait)
+
+	if err != nil {
+		return err
+	}
+
+	*o = MinimalStrokesTrait(varMinimalStrokesTrait)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "strokes")
+		delete(additionalProperties, "strokeWeight")
+		delete(additionalProperties, "strokeAlign")
+		delete(additionalProperties, "strokeJoin")
+		delete(additionalProperties, "strokeDashes")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableMinimalStrokesTrait struct {

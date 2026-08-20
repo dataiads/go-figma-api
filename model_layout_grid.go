@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -36,8 +35,9 @@ type LayoutGrid struct {
 	// Spacing before the first column or row
 	Offset float32 `json:"offset"`
 	// Number of columns or rows
-	Count          float32                   `json:"count"`
-	BoundVariables *LayoutGridBoundVariables `json:"boundVariables,omitempty"`
+	Count                float32                   `json:"count"`
+	BoundVariables       *LayoutGridBoundVariables `json:"boundVariables,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _LayoutGrid LayoutGrid
@@ -312,6 +312,11 @@ func (o LayoutGrid) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.BoundVariables) {
 		toSerialize["boundVariables"] = o.BoundVariables
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -346,15 +351,28 @@ func (o *LayoutGrid) UnmarshalJSON(data []byte) (err error) {
 
 	varLayoutGrid := _LayoutGrid{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varLayoutGrid)
+	err = json.Unmarshal(data, &varLayoutGrid)
 
 	if err != nil {
 		return err
 	}
 
 	*o = LayoutGrid(varLayoutGrid)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "pattern")
+		delete(additionalProperties, "sectionSize")
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "color")
+		delete(additionalProperties, "alignment")
+		delete(additionalProperties, "gutterSize")
+		delete(additionalProperties, "offset")
+		delete(additionalProperties, "count")
+		delete(additionalProperties, "boundVariables")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

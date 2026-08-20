@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -40,7 +39,8 @@ type PatternPaint struct {
 	// The horizontal alignment for the pattern
 	HorizontalAlignment string `json:"horizontalAlignment"`
 	// The vertical alignment for the pattern
-	VerticalAlignment string `json:"verticalAlignment"`
+	VerticalAlignment    string `json:"verticalAlignment"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _PatternPaint PatternPaint
@@ -358,6 +358,11 @@ func (o PatternPaint) ToMap() (map[string]interface{}, error) {
 	toSerialize["spacing"] = o.Spacing
 	toSerialize["horizontalAlignment"] = o.HorizontalAlignment
 	toSerialize["verticalAlignment"] = o.VerticalAlignment
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -392,15 +397,29 @@ func (o *PatternPaint) UnmarshalJSON(data []byte) (err error) {
 
 	varPatternPaint := _PatternPaint{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varPatternPaint)
+	err = json.Unmarshal(data, &varPatternPaint)
 
 	if err != nil {
 		return err
 	}
 
 	*o = PatternPaint(varPatternPaint)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "opacity")
+		delete(additionalProperties, "blendMode")
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "sourceNodeId")
+		delete(additionalProperties, "tileType")
+		delete(additionalProperties, "scalingFactor")
+		delete(additionalProperties, "spacing")
+		delete(additionalProperties, "horizontalAlignment")
+		delete(additionalProperties, "verticalAlignment")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

@@ -19,8 +19,11 @@ var _ MappedNullable = &ColorStopBoundVariables{}
 
 // ColorStopBoundVariables The variables bound to a particular gradient stop
 type ColorStopBoundVariables struct {
-	Color *VariableAlias `json:"color,omitempty"`
+	Color                *VariableAlias `json:"color,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ColorStopBoundVariables ColorStopBoundVariables
 
 // NewColorStopBoundVariables instantiates a new ColorStopBoundVariables object
 // This constructor will assign default values to properties that have it defined,
@@ -84,7 +87,33 @@ func (o ColorStopBoundVariables) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Color) {
 		toSerialize["color"] = o.Color
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ColorStopBoundVariables) UnmarshalJSON(data []byte) (err error) {
+	varColorStopBoundVariables := _ColorStopBoundVariables{}
+
+	err = json.Unmarshal(data, &varColorStopBoundVariables)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ColorStopBoundVariables(varColorStopBoundVariables)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "color")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableColorStopBoundVariables struct {

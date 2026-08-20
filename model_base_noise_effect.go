@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -32,7 +31,8 @@ type BaseNoiseEffect struct {
 	// The size of the noise effect
 	NoiseSize float32 `json:"noiseSize"`
 	// The density of the noise effect
-	Density float32 `json:"density"`
+	Density              float32 `json:"density"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _BaseNoiseEffect BaseNoiseEffect
@@ -220,6 +220,11 @@ func (o BaseNoiseEffect) ToMap() (map[string]interface{}, error) {
 	toSerialize["blendMode"] = o.BlendMode
 	toSerialize["noiseSize"] = o.NoiseSize
 	toSerialize["density"] = o.Density
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -252,15 +257,25 @@ func (o *BaseNoiseEffect) UnmarshalJSON(data []byte) (err error) {
 
 	varBaseNoiseEffect := _BaseNoiseEffect{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varBaseNoiseEffect)
+	err = json.Unmarshal(data, &varBaseNoiseEffect)
 
 	if err != nil {
 		return err
 	}
 
 	*o = BaseNoiseEffect(varBaseNoiseEffect)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "color")
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "blendMode")
+		delete(additionalProperties, "noiseSize")
+		delete(additionalProperties, "density")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -24,7 +23,8 @@ type LayoutConstraint struct {
 	// Vertical constraint (relative to containing frame) as an enum:  - `TOP`: Node is laid out relative to top of the containing frame - `BOTTOM`: Node is laid out relative to bottom of the containing frame - `CENTER`: Node is vertically centered relative to containing frame - `TOP_BOTTOM`: Both top and bottom of node are constrained relative to containing frame (node stretches with frame) - `SCALE`: Node scales vertically with containing frame
 	Vertical string `json:"vertical"`
 	// Horizontal constraint (relative to containing frame) as an enum:  - `LEFT`: Node is laid out relative to left of the containing frame - `RIGHT`: Node is laid out relative to right of the containing frame - `CENTER`: Node is horizontally centered relative to containing frame - `LEFT_RIGHT`: Both left and right of node are constrained relative to containing frame (node stretches with frame) - `SCALE`: Node scales horizontally with containing frame
-	Horizontal string `json:"horizontal"`
+	Horizontal           string `json:"horizontal"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _LayoutConstraint LayoutConstraint
@@ -108,6 +108,11 @@ func (o LayoutConstraint) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["vertical"] = o.Vertical
 	toSerialize["horizontal"] = o.Horizontal
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -136,15 +141,21 @@ func (o *LayoutConstraint) UnmarshalJSON(data []byte) (err error) {
 
 	varLayoutConstraint := _LayoutConstraint{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varLayoutConstraint)
+	err = json.Unmarshal(data, &varLayoutConstraint)
 
 	if err != nil {
 		return err
 	}
 
 	*o = LayoutConstraint(varLayoutConstraint)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "vertical")
+		delete(additionalProperties, "horizontal")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

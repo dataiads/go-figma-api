@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -24,7 +23,8 @@ type ErrorResponsePayloadWithErrMessage struct {
 	// Status code
 	Status float32 `json:"status"`
 	// A string describing the error
-	Err string `json:"err"`
+	Err                  string `json:"err"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _ErrorResponsePayloadWithErrMessage ErrorResponsePayloadWithErrMessage
@@ -108,6 +108,11 @@ func (o ErrorResponsePayloadWithErrMessage) ToMap() (map[string]interface{}, err
 	toSerialize := map[string]interface{}{}
 	toSerialize["status"] = o.Status
 	toSerialize["err"] = o.Err
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -136,15 +141,21 @@ func (o *ErrorResponsePayloadWithErrMessage) UnmarshalJSON(data []byte) (err err
 
 	varErrorResponsePayloadWithErrMessage := _ErrorResponsePayloadWithErrMessage{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varErrorResponsePayloadWithErrMessage)
+	err = json.Unmarshal(data, &varErrorResponsePayloadWithErrMessage)
 
 	if err != nil {
 		return err
 	}
 
 	*o = ErrorResponsePayloadWithErrMessage(varErrorResponsePayloadWithErrMessage)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "status")
+		delete(additionalProperties, "err")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

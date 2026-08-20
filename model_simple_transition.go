@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -25,7 +24,8 @@ type SimpleTransition struct {
 	// The duration of the transition in milliseconds.
 	Duration float32 `json:"duration"`
 	// The easing curve of the transition.
-	Easing Easing `json:"easing"`
+	Easing               Easing `json:"easing"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _SimpleTransition SimpleTransition
@@ -135,6 +135,11 @@ func (o SimpleTransition) ToMap() (map[string]interface{}, error) {
 	toSerialize["type"] = o.Type
 	toSerialize["duration"] = o.Duration
 	toSerialize["easing"] = o.Easing
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -164,15 +169,22 @@ func (o *SimpleTransition) UnmarshalJSON(data []byte) (err error) {
 
 	varSimpleTransition := _SimpleTransition{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varSimpleTransition)
+	err = json.Unmarshal(data, &varSimpleTransition)
 
 	if err != nil {
 		return err
 	}
 
 	*o = SimpleTransition(varSimpleTransition)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "duration")
+		delete(additionalProperties, "easing")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -28,7 +27,8 @@ type EasingEasingFunctionCubicBezier struct {
 	// The x component of the second control point.
 	X2 float32 `json:"x2"`
 	// The y component of the second control point.
-	Y2 float32 `json:"y2"`
+	Y2                   float32 `json:"y2"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _EasingEasingFunctionCubicBezier EasingEasingFunctionCubicBezier
@@ -164,6 +164,11 @@ func (o EasingEasingFunctionCubicBezier) ToMap() (map[string]interface{}, error)
 	toSerialize["y1"] = o.Y1
 	toSerialize["x2"] = o.X2
 	toSerialize["y2"] = o.Y2
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -194,15 +199,23 @@ func (o *EasingEasingFunctionCubicBezier) UnmarshalJSON(data []byte) (err error)
 
 	varEasingEasingFunctionCubicBezier := _EasingEasingFunctionCubicBezier{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varEasingEasingFunctionCubicBezier)
+	err = json.Unmarshal(data, &varEasingEasingFunctionCubicBezier)
 
 	if err != nil {
 		return err
 	}
 
 	*o = EasingEasingFunctionCubicBezier(varEasingEasingFunctionCubicBezier)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "x1")
+		delete(additionalProperties, "y1")
+		delete(additionalProperties, "x2")
+		delete(additionalProperties, "y2")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

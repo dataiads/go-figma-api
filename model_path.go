@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -26,7 +25,8 @@ type Path struct {
 	// The winding rule for the path (same as in SVGs). This determines whether a given point in space is inside or outside the path.
 	WindingRule string `json:"windingRule"`
 	// If there is a per-region fill, this refers to an ID in the `fillOverrideTable`.
-	OverrideID *float32 `json:"overrideID,omitempty"`
+	OverrideID           *float32 `json:"overrideID,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _Path Path
@@ -145,6 +145,11 @@ func (o Path) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.OverrideID) {
 		toSerialize["overrideID"] = o.OverrideID
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -173,15 +178,22 @@ func (o *Path) UnmarshalJSON(data []byte) (err error) {
 
 	varPath := _Path{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varPath)
+	err = json.Unmarshal(data, &varPath)
 
 	if err != nil {
 		return err
 	}
 
 	*o = Path(varPath)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "path")
+		delete(additionalProperties, "windingRule")
+		delete(additionalProperties, "overrideID")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -22,7 +21,8 @@ var _ MappedNullable = &HasChildrenTrait{}
 // HasChildrenTrait struct for HasChildrenTrait
 type HasChildrenTrait struct {
 	// An array of nodes that are direct children of this node
-	Children []SubcanvasNode `json:"children"`
+	Children             []SubcanvasNode `json:"children"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _HasChildrenTrait HasChildrenTrait
@@ -80,6 +80,11 @@ func (o HasChildrenTrait) MarshalJSON() ([]byte, error) {
 func (o HasChildrenTrait) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["children"] = o.Children
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -107,15 +112,20 @@ func (o *HasChildrenTrait) UnmarshalJSON(data []byte) (err error) {
 
 	varHasChildrenTrait := _HasChildrenTrait{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varHasChildrenTrait)
+	err = json.Unmarshal(data, &varHasChildrenTrait)
 
 	if err != nil {
 		return err
 	}
 
 	*o = HasChildrenTrait(varHasChildrenTrait)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "children")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

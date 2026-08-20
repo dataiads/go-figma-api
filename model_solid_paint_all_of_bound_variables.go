@@ -19,8 +19,11 @@ var _ MappedNullable = &SolidPaintAllOfBoundVariables{}
 
 // SolidPaintAllOfBoundVariables The variables bound to a particular field on this paint
 type SolidPaintAllOfBoundVariables struct {
-	Color *VariableAlias `json:"color,omitempty"`
+	Color                *VariableAlias `json:"color,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _SolidPaintAllOfBoundVariables SolidPaintAllOfBoundVariables
 
 // NewSolidPaintAllOfBoundVariables instantiates a new SolidPaintAllOfBoundVariables object
 // This constructor will assign default values to properties that have it defined,
@@ -84,7 +87,33 @@ func (o SolidPaintAllOfBoundVariables) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Color) {
 		toSerialize["color"] = o.Color
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *SolidPaintAllOfBoundVariables) UnmarshalJSON(data []byte) (err error) {
+	varSolidPaintAllOfBoundVariables := _SolidPaintAllOfBoundVariables{}
+
+	err = json.Unmarshal(data, &varSolidPaintAllOfBoundVariables)
+
+	if err != nil {
+		return err
+	}
+
+	*o = SolidPaintAllOfBoundVariables(varSolidPaintAllOfBoundVariables)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "color")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableSolidPaintAllOfBoundVariables struct {

@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -24,7 +23,8 @@ type HasBlendModeAndOpacityTrait struct {
 	// How this node blends with nodes behind it in the scene (see blend mode section for more details)
 	BlendMode BlendMode `json:"blendMode"`
 	// Opacity of the node
-	Opacity *float32 `json:"opacity,omitempty"`
+	Opacity              *float32 `json:"opacity,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _HasBlendModeAndOpacityTrait HasBlendModeAndOpacityTrait
@@ -121,6 +121,11 @@ func (o HasBlendModeAndOpacityTrait) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Opacity) {
 		toSerialize["opacity"] = o.Opacity
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -148,15 +153,21 @@ func (o *HasBlendModeAndOpacityTrait) UnmarshalJSON(data []byte) (err error) {
 
 	varHasBlendModeAndOpacityTrait := _HasBlendModeAndOpacityTrait{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varHasBlendModeAndOpacityTrait)
+	err = json.Unmarshal(data, &varHasBlendModeAndOpacityTrait)
 
 	if err != nil {
 		return err
 	}
 
 	*o = HasBlendModeAndOpacityTrait(varHasBlendModeAndOpacityTrait)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "blendMode")
+		delete(additionalProperties, "opacity")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

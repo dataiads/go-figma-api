@@ -19,14 +19,17 @@ var _ MappedNullable = &ImageFilters{}
 
 // ImageFilters Image filters to apply to the node.
 type ImageFilters struct {
-	Exposure    *float32 `json:"exposure,omitempty"`
-	Contrast    *float32 `json:"contrast,omitempty"`
-	Saturation  *float32 `json:"saturation,omitempty"`
-	Temperature *float32 `json:"temperature,omitempty"`
-	Tint        *float32 `json:"tint,omitempty"`
-	Highlights  *float32 `json:"highlights,omitempty"`
-	Shadows     *float32 `json:"shadows,omitempty"`
+	Exposure             *float32 `json:"exposure,omitempty"`
+	Contrast             *float32 `json:"contrast,omitempty"`
+	Saturation           *float32 `json:"saturation,omitempty"`
+	Temperature          *float32 `json:"temperature,omitempty"`
+	Tint                 *float32 `json:"tint,omitempty"`
+	Highlights           *float32 `json:"highlights,omitempty"`
+	Shadows              *float32 `json:"shadows,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ImageFilters ImageFilters
 
 // NewImageFilters instantiates a new ImageFilters object
 // This constructor will assign default values to properties that have it defined,
@@ -328,7 +331,39 @@ func (o ImageFilters) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Shadows) {
 		toSerialize["shadows"] = o.Shadows
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ImageFilters) UnmarshalJSON(data []byte) (err error) {
+	varImageFilters := _ImageFilters{}
+
+	err = json.Unmarshal(data, &varImageFilters)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ImageFilters(varImageFilters)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "exposure")
+		delete(additionalProperties, "contrast")
+		delete(additionalProperties, "saturation")
+		delete(additionalProperties, "temperature")
+		delete(additionalProperties, "tint")
+		delete(additionalProperties, "highlights")
+		delete(additionalProperties, "shadows")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableImageFilters struct {

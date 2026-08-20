@@ -19,11 +19,14 @@ var _ MappedNullable = &IsLayerTraitBoundVariablesIndividualStrokeWeights{}
 
 // IsLayerTraitBoundVariablesIndividualStrokeWeights struct for IsLayerTraitBoundVariablesIndividualStrokeWeights
 type IsLayerTraitBoundVariablesIndividualStrokeWeights struct {
-	Top    *VariableAlias `json:"top,omitempty"`
-	Bottom *VariableAlias `json:"bottom,omitempty"`
-	Left   *VariableAlias `json:"left,omitempty"`
-	Right  *VariableAlias `json:"right,omitempty"`
+	Top                  *VariableAlias `json:"top,omitempty"`
+	Bottom               *VariableAlias `json:"bottom,omitempty"`
+	Left                 *VariableAlias `json:"left,omitempty"`
+	Right                *VariableAlias `json:"right,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _IsLayerTraitBoundVariablesIndividualStrokeWeights IsLayerTraitBoundVariablesIndividualStrokeWeights
 
 // NewIsLayerTraitBoundVariablesIndividualStrokeWeights instantiates a new IsLayerTraitBoundVariablesIndividualStrokeWeights object
 // This constructor will assign default values to properties that have it defined,
@@ -192,7 +195,36 @@ func (o IsLayerTraitBoundVariablesIndividualStrokeWeights) ToMap() (map[string]i
 	if !IsNil(o.Right) {
 		toSerialize["right"] = o.Right
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *IsLayerTraitBoundVariablesIndividualStrokeWeights) UnmarshalJSON(data []byte) (err error) {
+	varIsLayerTraitBoundVariablesIndividualStrokeWeights := _IsLayerTraitBoundVariablesIndividualStrokeWeights{}
+
+	err = json.Unmarshal(data, &varIsLayerTraitBoundVariablesIndividualStrokeWeights)
+
+	if err != nil {
+		return err
+	}
+
+	*o = IsLayerTraitBoundVariablesIndividualStrokeWeights(varIsLayerTraitBoundVariablesIndividualStrokeWeights)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "top")
+		delete(additionalProperties, "bottom")
+		delete(additionalProperties, "left")
+		delete(additionalProperties, "right")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableIsLayerTraitBoundVariablesIndividualStrokeWeights struct {

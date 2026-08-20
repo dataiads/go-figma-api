@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -28,7 +27,8 @@ type DirectionalTransition struct {
 	// The easing curve of the transition.
 	Easing Easing `json:"easing"`
 	// When the transition `type` is `\"SMART_ANIMATE\"` or when `matchLayers` is `true`, then the transition will be performed using smart animate, which attempts to match corresponding layers an interpolate other properties during the animation.
-	MatchLayers *bool `json:"matchLayers,omitempty"`
+	MatchLayers          *bool `json:"matchLayers,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _DirectionalTransition DirectionalTransition
@@ -199,6 +199,11 @@ func (o DirectionalTransition) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.MatchLayers) {
 		toSerialize["matchLayers"] = o.MatchLayers
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -229,15 +234,24 @@ func (o *DirectionalTransition) UnmarshalJSON(data []byte) (err error) {
 
 	varDirectionalTransition := _DirectionalTransition{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varDirectionalTransition)
+	err = json.Unmarshal(data, &varDirectionalTransition)
 
 	if err != nil {
 		return err
 	}
 
 	*o = DirectionalTransition(varDirectionalTransition)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "direction")
+		delete(additionalProperties, "duration")
+		delete(additionalProperties, "easing")
+		delete(additionalProperties, "matchLayers")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

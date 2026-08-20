@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -22,7 +21,8 @@ var _ MappedNullable = &HasEffectsTrait{}
 // HasEffectsTrait struct for HasEffectsTrait
 type HasEffectsTrait struct {
 	// An array of effects attached to this node (see effects section for more details)
-	Effects []Effect `json:"effects"`
+	Effects              []Effect `json:"effects"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _HasEffectsTrait HasEffectsTrait
@@ -80,6 +80,11 @@ func (o HasEffectsTrait) MarshalJSON() ([]byte, error) {
 func (o HasEffectsTrait) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["effects"] = o.Effects
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -107,15 +112,20 @@ func (o *HasEffectsTrait) UnmarshalJSON(data []byte) (err error) {
 
 	varHasEffectsTrait := _HasEffectsTrait{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varHasEffectsTrait)
+	err = json.Unmarshal(data, &varHasEffectsTrait)
 
 	if err != nil {
 		return err
 	}
 
 	*o = HasEffectsTrait(varHasEffectsTrait)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "effects")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

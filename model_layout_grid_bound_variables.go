@@ -19,11 +19,14 @@ var _ MappedNullable = &LayoutGridBoundVariables{}
 
 // LayoutGridBoundVariables The variables bound to a particular field on this layout grid
 type LayoutGridBoundVariables struct {
-	GutterSize  *VariableAlias `json:"gutterSize,omitempty"`
-	NumSections *VariableAlias `json:"numSections,omitempty"`
-	SectionSize *VariableAlias `json:"sectionSize,omitempty"`
-	Offset      *VariableAlias `json:"offset,omitempty"`
+	GutterSize           *VariableAlias `json:"gutterSize,omitempty"`
+	NumSections          *VariableAlias `json:"numSections,omitempty"`
+	SectionSize          *VariableAlias `json:"sectionSize,omitempty"`
+	Offset               *VariableAlias `json:"offset,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _LayoutGridBoundVariables LayoutGridBoundVariables
 
 // NewLayoutGridBoundVariables instantiates a new LayoutGridBoundVariables object
 // This constructor will assign default values to properties that have it defined,
@@ -192,7 +195,36 @@ func (o LayoutGridBoundVariables) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Offset) {
 		toSerialize["offset"] = o.Offset
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *LayoutGridBoundVariables) UnmarshalJSON(data []byte) (err error) {
+	varLayoutGridBoundVariables := _LayoutGridBoundVariables{}
+
+	err = json.Unmarshal(data, &varLayoutGridBoundVariables)
+
+	if err != nil {
+		return err
+	}
+
+	*o = LayoutGridBoundVariables(varLayoutGridBoundVariables)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "gutterSize")
+		delete(additionalProperties, "numSections")
+		delete(additionalProperties, "sectionSize")
+		delete(additionalProperties, "offset")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableLayoutGridBoundVariables struct {

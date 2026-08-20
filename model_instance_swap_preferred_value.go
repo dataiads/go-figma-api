@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -24,7 +23,8 @@ type InstanceSwapPreferredValue struct {
 	// Type of node for this preferred value.
 	Type string `json:"type"`
 	// Key of this component or component set.
-	Key string `json:"key"`
+	Key                  string `json:"key"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _InstanceSwapPreferredValue InstanceSwapPreferredValue
@@ -108,6 +108,11 @@ func (o InstanceSwapPreferredValue) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["type"] = o.Type
 	toSerialize["key"] = o.Key
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -136,15 +141,21 @@ func (o *InstanceSwapPreferredValue) UnmarshalJSON(data []byte) (err error) {
 
 	varInstanceSwapPreferredValue := _InstanceSwapPreferredValue{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varInstanceSwapPreferredValue)
+	err = json.Unmarshal(data, &varInstanceSwapPreferredValue)
 
 	if err != nil {
 		return err
 	}
 
 	*o = InstanceSwapPreferredValue(varInstanceSwapPreferredValue)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "key")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

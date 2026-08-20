@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -21,10 +20,11 @@ var _ MappedNullable = &PrototypeDevice{}
 
 // PrototypeDevice The device used to view a prototype.
 type PrototypeDevice struct {
-	Type             string  `json:"type"`
-	Size             *Size   `json:"size,omitempty"`
-	PresetIdentifier *string `json:"presetIdentifier,omitempty"`
-	Rotation         string  `json:"rotation"`
+	Type                 string  `json:"type"`
+	Size                 *Size   `json:"size,omitempty"`
+	PresetIdentifier     *string `json:"presetIdentifier,omitempty"`
+	Rotation             string  `json:"rotation"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _PrototypeDevice PrototypeDevice
@@ -178,6 +178,11 @@ func (o PrototypeDevice) ToMap() (map[string]interface{}, error) {
 		toSerialize["presetIdentifier"] = o.PresetIdentifier
 	}
 	toSerialize["rotation"] = o.Rotation
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -206,15 +211,23 @@ func (o *PrototypeDevice) UnmarshalJSON(data []byte) (err error) {
 
 	varPrototypeDevice := _PrototypeDevice{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varPrototypeDevice)
+	err = json.Unmarshal(data, &varPrototypeDevice)
 
 	if err != nil {
 		return err
 	}
 
 	*o = PrototypeDevice(varPrototypeDevice)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "size")
+		delete(additionalProperties, "presetIdentifier")
+		delete(additionalProperties, "rotation")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

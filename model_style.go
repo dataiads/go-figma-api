@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -28,8 +27,9 @@ type Style struct {
 	// Description of the style
 	Description string `json:"description"`
 	// Whether this style is a remote style that doesn't live in this file
-	Remote    bool      `json:"remote"`
-	StyleType StyleType `json:"styleType"`
+	Remote               bool      `json:"remote"`
+	StyleType            StyleType `json:"styleType"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _Style Style
@@ -191,6 +191,11 @@ func (o Style) ToMap() (map[string]interface{}, error) {
 	toSerialize["description"] = o.Description
 	toSerialize["remote"] = o.Remote
 	toSerialize["styleType"] = o.StyleType
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -222,15 +227,24 @@ func (o *Style) UnmarshalJSON(data []byte) (err error) {
 
 	varStyle := _Style{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varStyle)
+	err = json.Unmarshal(data, &varStyle)
 
 	if err != nil {
 		return err
 	}
 
 	*o = Style(varStyle)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "key")
+		delete(additionalProperties, "name")
+		delete(additionalProperties, "description")
+		delete(additionalProperties, "remote")
+		delete(additionalProperties, "styleType")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

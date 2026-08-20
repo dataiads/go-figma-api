@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -75,6 +74,7 @@ type HasLayoutTrait struct {
 	GridRowAnchorIndex *float32 `json:"gridRowAnchorIndex,omitempty"`
 	// The index of the column that a GRID frame's child should be anchored to. This property is only applicable for direct children of frames with `layoutMode: \"GRID\"`.
 	GridColumnAnchorIndex *float32 `json:"gridColumnAnchorIndex,omitempty"`
+	AdditionalProperties  map[string]interface{}
 }
 
 type _HasLayoutTrait HasLayoutTrait
@@ -1085,6 +1085,11 @@ func (o HasLayoutTrait) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.GridColumnAnchorIndex) {
 		toSerialize["gridColumnAnchorIndex"] = o.GridColumnAnchorIndex
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -1113,15 +1118,46 @@ func (o *HasLayoutTrait) UnmarshalJSON(data []byte) (err error) {
 
 	varHasLayoutTrait := _HasLayoutTrait{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varHasLayoutTrait)
+	err = json.Unmarshal(data, &varHasLayoutTrait)
 
 	if err != nil {
 		return err
 	}
 
 	*o = HasLayoutTrait(varHasLayoutTrait)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "absoluteBoundingBox")
+		delete(additionalProperties, "absoluteRenderBounds")
+		delete(additionalProperties, "preserveRatio")
+		delete(additionalProperties, "constraints")
+		delete(additionalProperties, "relativeTransform")
+		delete(additionalProperties, "size")
+		delete(additionalProperties, "layoutAlign")
+		delete(additionalProperties, "layoutGrow")
+		delete(additionalProperties, "layoutPositioning")
+		delete(additionalProperties, "minWidth")
+		delete(additionalProperties, "maxWidth")
+		delete(additionalProperties, "minHeight")
+		delete(additionalProperties, "maxHeight")
+		delete(additionalProperties, "layoutSizingHorizontal")
+		delete(additionalProperties, "layoutSizingVertical")
+		delete(additionalProperties, "gridRowCount")
+		delete(additionalProperties, "gridColumnCount")
+		delete(additionalProperties, "gridRowGap")
+		delete(additionalProperties, "gridColumnGap")
+		delete(additionalProperties, "gridColumnsSizing")
+		delete(additionalProperties, "gridRowsSizing")
+		delete(additionalProperties, "gridChildHorizontalAlign")
+		delete(additionalProperties, "gridChildVerticalAlign")
+		delete(additionalProperties, "gridRowSpan")
+		delete(additionalProperties, "gridColumnSpan")
+		delete(additionalProperties, "gridRowAnchorIndex")
+		delete(additionalProperties, "gridColumnAnchorIndex")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

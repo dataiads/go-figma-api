@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -106,7 +105,8 @@ type TableCellNode struct {
 	// The index of the column that a GRID frame's child should be anchored to. This property is only applicable for direct children of frames with `layoutMode: \"GRID\"`.
 	GridColumnAnchorIndex *float32 `json:"gridColumnAnchorIndex,omitempty"`
 	// Text contained within a text box.
-	Characters string `json:"characters"`
+	Characters           string `json:"characters"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _TableCellNode TableCellNode
@@ -1646,6 +1646,11 @@ func (o TableCellNode) ToMap() (map[string]interface{}, error) {
 		toSerialize["gridColumnAnchorIndex"] = o.GridColumnAnchorIndex
 	}
 	toSerialize["characters"] = o.Characters
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -1680,15 +1685,62 @@ func (o *TableCellNode) UnmarshalJSON(data []byte) (err error) {
 
 	varTableCellNode := _TableCellNode{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varTableCellNode)
+	err = json.Unmarshal(data, &varTableCellNode)
 
 	if err != nil {
 		return err
 	}
 
 	*o = TableCellNode(varTableCellNode)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "id")
+		delete(additionalProperties, "name")
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "locked")
+		delete(additionalProperties, "isFixed")
+		delete(additionalProperties, "scrollBehavior")
+		delete(additionalProperties, "rotation")
+		delete(additionalProperties, "componentPropertyReferences")
+		delete(additionalProperties, "pluginData")
+		delete(additionalProperties, "sharedPluginData")
+		delete(additionalProperties, "boundVariables")
+		delete(additionalProperties, "explicitVariableModes")
+		delete(additionalProperties, "fills")
+		delete(additionalProperties, "styles")
+		delete(additionalProperties, "absoluteBoundingBox")
+		delete(additionalProperties, "absoluteRenderBounds")
+		delete(additionalProperties, "preserveRatio")
+		delete(additionalProperties, "constraints")
+		delete(additionalProperties, "relativeTransform")
+		delete(additionalProperties, "size")
+		delete(additionalProperties, "layoutAlign")
+		delete(additionalProperties, "layoutGrow")
+		delete(additionalProperties, "layoutPositioning")
+		delete(additionalProperties, "minWidth")
+		delete(additionalProperties, "maxWidth")
+		delete(additionalProperties, "minHeight")
+		delete(additionalProperties, "maxHeight")
+		delete(additionalProperties, "layoutSizingHorizontal")
+		delete(additionalProperties, "layoutSizingVertical")
+		delete(additionalProperties, "gridRowCount")
+		delete(additionalProperties, "gridColumnCount")
+		delete(additionalProperties, "gridRowGap")
+		delete(additionalProperties, "gridColumnGap")
+		delete(additionalProperties, "gridColumnsSizing")
+		delete(additionalProperties, "gridRowsSizing")
+		delete(additionalProperties, "gridChildHorizontalAlign")
+		delete(additionalProperties, "gridChildVerticalAlign")
+		delete(additionalProperties, "gridRowSpan")
+		delete(additionalProperties, "gridColumnSpan")
+		delete(additionalProperties, "gridRowAnchorIndex")
+		delete(additionalProperties, "gridColumnAnchorIndex")
+		delete(additionalProperties, "characters")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

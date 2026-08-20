@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -30,7 +29,8 @@ type ConnectorTextBackground struct {
 	// An array of fill paints applied to the node.
 	Fills []Paint `json:"fills"`
 	// A mapping of a StyleType to style ID (see Style) of styles present on this node. The style ID can be used to look up more information about the style in the top-level styles field.
-	Styles map[string]string `json:"styles,omitempty"`
+	Styles               map[string]string `json:"styles,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _ConnectorTextBackground ConnectorTextBackground
@@ -232,6 +232,11 @@ func (o ConnectorTextBackground) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Styles) {
 		toSerialize["styles"] = o.Styles
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -259,15 +264,24 @@ func (o *ConnectorTextBackground) UnmarshalJSON(data []byte) (err error) {
 
 	varConnectorTextBackground := _ConnectorTextBackground{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varConnectorTextBackground)
+	err = json.Unmarshal(data, &varConnectorTextBackground)
 
 	if err != nil {
 		return err
 	}
 
 	*o = ConnectorTextBackground(varConnectorTextBackground)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "cornerRadius")
+		delete(additionalProperties, "cornerSmoothing")
+		delete(additionalProperties, "rectangleCornerRadii")
+		delete(additionalProperties, "fills")
+		delete(additionalProperties, "styles")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

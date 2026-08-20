@@ -19,8 +19,11 @@ var _ MappedNullable = &DevStatusTrait{}
 
 // DevStatusTrait struct for DevStatusTrait
 type DevStatusTrait struct {
-	DevStatus *DevStatusTraitDevStatus `json:"devStatus,omitempty"`
+	DevStatus            *DevStatusTraitDevStatus `json:"devStatus,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _DevStatusTrait DevStatusTrait
 
 // NewDevStatusTrait instantiates a new DevStatusTrait object
 // This constructor will assign default values to properties that have it defined,
@@ -84,7 +87,33 @@ func (o DevStatusTrait) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.DevStatus) {
 		toSerialize["devStatus"] = o.DevStatus
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *DevStatusTrait) UnmarshalJSON(data []byte) (err error) {
+	varDevStatusTrait := _DevStatusTrait{}
+
+	err = json.Unmarshal(data, &varDevStatusTrait)
+
+	if err != nil {
+		return err
+	}
+
+	*o = DevStatusTrait(varDevStatusTrait)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "devStatus")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableDevStatusTrait struct {

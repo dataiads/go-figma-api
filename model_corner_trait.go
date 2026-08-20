@@ -25,7 +25,10 @@ type CornerTrait struct {
 	CornerSmoothing *float32 `json:"cornerSmoothing,omitempty"`
 	// Array of length 4 of the radius of each corner of the frame, starting in the top left and proceeding clockwise.  Values are given in the order top-left, top-right, bottom-right, bottom-left.
 	RectangleCornerRadii []float32 `json:"rectangleCornerRadii,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _CornerTrait CornerTrait
 
 // NewCornerTrait instantiates a new CornerTrait object
 // This constructor will assign default values to properties that have it defined,
@@ -163,7 +166,35 @@ func (o CornerTrait) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.RectangleCornerRadii) {
 		toSerialize["rectangleCornerRadii"] = o.RectangleCornerRadii
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *CornerTrait) UnmarshalJSON(data []byte) (err error) {
+	varCornerTrait := _CornerTrait{}
+
+	err = json.Unmarshal(data, &varCornerTrait)
+
+	if err != nil {
+		return err
+	}
+
+	*o = CornerTrait(varCornerTrait)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "cornerRadius")
+		delete(additionalProperties, "cornerSmoothing")
+		delete(additionalProperties, "rectangleCornerRadii")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableCornerTrait struct {

@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -30,7 +29,8 @@ type TextPathPropertiesTrait struct {
 	// Internal property, preserved for backward compatibility. Avoid using this value.
 	LayoutVersion *float32 `json:"layoutVersion,omitempty"`
 	// Map from ID to TextPathTypeStyle for looking up style overrides.
-	StyleOverrideTable map[string]TextPathTypeStyle `json:"styleOverrideTable"`
+	StyleOverrideTable   map[string]TextPathTypeStyle `json:"styleOverrideTable"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _TextPathPropertiesTrait TextPathPropertiesTrait
@@ -201,6 +201,11 @@ func (o TextPathPropertiesTrait) ToMap() (map[string]interface{}, error) {
 		toSerialize["layoutVersion"] = o.LayoutVersion
 	}
 	toSerialize["styleOverrideTable"] = o.StyleOverrideTable
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -231,15 +236,24 @@ func (o *TextPathPropertiesTrait) UnmarshalJSON(data []byte) (err error) {
 
 	varTextPathPropertiesTrait := _TextPathPropertiesTrait{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varTextPathPropertiesTrait)
+	err = json.Unmarshal(data, &varTextPathPropertiesTrait)
 
 	if err != nil {
 		return err
 	}
 
 	*o = TextPathPropertiesTrait(varTextPathPropertiesTrait)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "characters")
+		delete(additionalProperties, "style")
+		delete(additionalProperties, "characterStyleOverrides")
+		delete(additionalProperties, "layoutVersion")
+		delete(additionalProperties, "styleOverrideTable")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

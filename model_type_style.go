@@ -74,7 +74,10 @@ type TypeStyle struct {
 	// Whether or not this style has overrides over a text style. The possible fields to override are semanticWeight, semanticItalic, hyperlink, and textDecoration. If this is true, then those fields are overrides if present.
 	IsOverrideOverTextStyle *bool                         `json:"isOverrideOverTextStyle,omitempty"`
 	BoundVariables          *TypeStyleAllOfBoundVariables `json:"boundVariables,omitempty"`
+	AdditionalProperties    map[string]interface{}
 }
+
+type _TypeStyle TypeStyle
 
 // NewTypeStyle instantiates a new TypeStyle object
 // This constructor will assign default values to properties that have it defined,
@@ -1115,7 +1118,60 @@ func (o TypeStyle) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.BoundVariables) {
 		toSerialize["boundVariables"] = o.BoundVariables
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *TypeStyle) UnmarshalJSON(data []byte) (err error) {
+	varTypeStyle := _TypeStyle{}
+
+	err = json.Unmarshal(data, &varTypeStyle)
+
+	if err != nil {
+		return err
+	}
+
+	*o = TypeStyle(varTypeStyle)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "fontFamily")
+		delete(additionalProperties, "fontPostScriptName")
+		delete(additionalProperties, "fontStyle")
+		delete(additionalProperties, "italic")
+		delete(additionalProperties, "fontWeight")
+		delete(additionalProperties, "fontSize")
+		delete(additionalProperties, "textCase")
+		delete(additionalProperties, "textAlignHorizontal")
+		delete(additionalProperties, "textAlignVertical")
+		delete(additionalProperties, "letterSpacing")
+		delete(additionalProperties, "fills")
+		delete(additionalProperties, "hyperlink")
+		delete(additionalProperties, "opentypeFlags")
+		delete(additionalProperties, "semanticWeight")
+		delete(additionalProperties, "semanticItalic")
+		delete(additionalProperties, "paragraphSpacing")
+		delete(additionalProperties, "paragraphIndent")
+		delete(additionalProperties, "listSpacing")
+		delete(additionalProperties, "textDecoration")
+		delete(additionalProperties, "textAutoResize")
+		delete(additionalProperties, "textTruncation")
+		delete(additionalProperties, "maxLines")
+		delete(additionalProperties, "lineHeightPx")
+		delete(additionalProperties, "lineHeightPercent")
+		delete(additionalProperties, "lineHeightPercentFontSize")
+		delete(additionalProperties, "lineHeightUnit")
+		delete(additionalProperties, "isOverrideOverTextStyle")
+		delete(additionalProperties, "boundVariables")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableTypeStyle struct {

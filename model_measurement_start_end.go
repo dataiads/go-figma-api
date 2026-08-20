@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -21,8 +20,9 @@ var _ MappedNullable = &MeasurementStartEnd{}
 
 // MeasurementStartEnd The node and side a measurement is pinned to
 type MeasurementStartEnd struct {
-	NodeId string `json:"nodeId"`
-	Side   string `json:"side"`
+	NodeId               string `json:"nodeId"`
+	Side                 string `json:"side"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _MeasurementStartEnd MeasurementStartEnd
@@ -106,6 +106,11 @@ func (o MeasurementStartEnd) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["nodeId"] = o.NodeId
 	toSerialize["side"] = o.Side
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -134,15 +139,21 @@ func (o *MeasurementStartEnd) UnmarshalJSON(data []byte) (err error) {
 
 	varMeasurementStartEnd := _MeasurementStartEnd{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varMeasurementStartEnd)
+	err = json.Unmarshal(data, &varMeasurementStartEnd)
 
 	if err != nil {
 		return err
 	}
 
 	*o = MeasurementStartEnd(varMeasurementStartEnd)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "nodeId")
+		delete(additionalProperties, "side")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

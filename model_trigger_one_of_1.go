@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -24,7 +23,8 @@ type TriggerOneOf1 struct {
 	Type  string  `json:"type"`
 	Delay float32 `json:"delay"`
 	// Whether this is a [deprecated version](https://help.figma.com/hc/en-us/articles/360040035834-Prototype-triggers#h_01HHN04REHJNP168R26P1CMP0A) of the trigger that was left unchanged for backwards compatibility. If not present, the trigger is the latest version.
-	DeprecatedVersion *bool `json:"deprecatedVersion,omitempty"`
+	DeprecatedVersion    *bool `json:"deprecatedVersion,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _TriggerOneOf1 TriggerOneOf1
@@ -143,6 +143,11 @@ func (o TriggerOneOf1) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.DeprecatedVersion) {
 		toSerialize["deprecatedVersion"] = o.DeprecatedVersion
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -171,15 +176,22 @@ func (o *TriggerOneOf1) UnmarshalJSON(data []byte) (err error) {
 
 	varTriggerOneOf1 := _TriggerOneOf1{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varTriggerOneOf1)
+	err = json.Unmarshal(data, &varTriggerOneOf1)
 
 	if err != nil {
 		return err
 	}
 
 	*o = TriggerOneOf1(varTriggerOneOf1)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "delay")
+		delete(additionalProperties, "deprecatedVersion")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

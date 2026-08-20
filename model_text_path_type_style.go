@@ -52,7 +52,10 @@ type TextPathTypeStyle struct {
 	// Whether or not this style has overrides over a text style. The possible fields to override are semanticWeight, semanticItalic, and hyperlink. If this is true, then those fields are overrides if present.
 	IsOverrideOverTextStyle *bool                                 `json:"isOverrideOverTextStyle,omitempty"`
 	BoundVariables          *TextPathTypeStyleAllOfBoundVariables `json:"boundVariables,omitempty"`
+	AdditionalProperties    map[string]interface{}
 }
+
+type _TextPathTypeStyle TextPathTypeStyle
 
 // NewTextPathTypeStyle instantiates a new TextPathTypeStyle object
 // This constructor will assign default values to properties that have it defined,
@@ -680,7 +683,49 @@ func (o TextPathTypeStyle) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.BoundVariables) {
 		toSerialize["boundVariables"] = o.BoundVariables
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *TextPathTypeStyle) UnmarshalJSON(data []byte) (err error) {
+	varTextPathTypeStyle := _TextPathTypeStyle{}
+
+	err = json.Unmarshal(data, &varTextPathTypeStyle)
+
+	if err != nil {
+		return err
+	}
+
+	*o = TextPathTypeStyle(varTextPathTypeStyle)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "fontFamily")
+		delete(additionalProperties, "fontPostScriptName")
+		delete(additionalProperties, "fontStyle")
+		delete(additionalProperties, "italic")
+		delete(additionalProperties, "fontWeight")
+		delete(additionalProperties, "fontSize")
+		delete(additionalProperties, "textCase")
+		delete(additionalProperties, "textAlignHorizontal")
+		delete(additionalProperties, "textAlignVertical")
+		delete(additionalProperties, "letterSpacing")
+		delete(additionalProperties, "fills")
+		delete(additionalProperties, "hyperlink")
+		delete(additionalProperties, "opentypeFlags")
+		delete(additionalProperties, "semanticWeight")
+		delete(additionalProperties, "semanticItalic")
+		delete(additionalProperties, "isOverrideOverTextStyle")
+		delete(additionalProperties, "boundVariables")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableTextPathTypeStyle struct {

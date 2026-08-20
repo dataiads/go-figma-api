@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -25,8 +24,9 @@ type ComponentProperty struct {
 	Type  ComponentPropertyType  `json:"type"`
 	Value ComponentPropertyValue `json:"value"`
 	// Preferred values for this property. Only applicable if type is `INSTANCE_SWAP`.
-	PreferredValues []InstanceSwapPreferredValue     `json:"preferredValues,omitempty"`
-	BoundVariables  *ComponentPropertyBoundVariables `json:"boundVariables,omitempty"`
+	PreferredValues      []InstanceSwapPreferredValue     `json:"preferredValues,omitempty"`
+	BoundVariables       *ComponentPropertyBoundVariables `json:"boundVariables,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _ComponentProperty ComponentProperty
@@ -180,6 +180,11 @@ func (o ComponentProperty) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.BoundVariables) {
 		toSerialize["boundVariables"] = o.BoundVariables
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -208,15 +213,23 @@ func (o *ComponentProperty) UnmarshalJSON(data []byte) (err error) {
 
 	varComponentProperty := _ComponentProperty{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varComponentProperty)
+	err = json.Unmarshal(data, &varComponentProperty)
 
 	if err != nil {
 		return err
 	}
 
 	*o = ComponentProperty(varComponentProperty)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "value")
+		delete(additionalProperties, "preferredValues")
+		delete(additionalProperties, "boundVariables")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

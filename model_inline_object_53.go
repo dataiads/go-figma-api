@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -24,7 +23,8 @@ type InlineObject53 struct {
 	// Status code
 	Status float32 `json:"status"`
 	// A string describing the error
-	Err string `json:"err"`
+	Err                  string `json:"err"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _InlineObject53 InlineObject53
@@ -108,6 +108,11 @@ func (o InlineObject53) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["status"] = o.Status
 	toSerialize["err"] = o.Err
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -136,15 +141,21 @@ func (o *InlineObject53) UnmarshalJSON(data []byte) (err error) {
 
 	varInlineObject53 := _InlineObject53{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varInlineObject53)
+	err = json.Unmarshal(data, &varInlineObject53)
 
 	if err != nil {
 		return err
 	}
 
 	*o = InlineObject53(varInlineObject53)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "status")
+		delete(additionalProperties, "err")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

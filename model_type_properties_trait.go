@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -34,7 +33,8 @@ type TypePropertiesTrait struct {
 	// An array with the same number of elements as lines in the text node, where lines are delimited by newline or paragraph separator characters. Each element in the array corresponds to the list type of a specific line. List types are represented as string enums with one of these possible values:  - `NONE`: Not a list item. - `ORDERED`: Text is an ordered list (numbered). - `UNORDERED`: Text is an unordered list (bulleted).
 	LineTypes []string `json:"lineTypes"`
 	// An array with the same number of elements as lines in the text node, where lines are delimited by newline or paragraph separator characters. Each element in the array corresponds to the indentation level of a specific line.
-	LineIndentations []float32 `json:"lineIndentations"`
+	LineIndentations     []float32 `json:"lineIndentations"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _TypePropertiesTrait TypePropertiesTrait
@@ -257,6 +257,11 @@ func (o TypePropertiesTrait) ToMap() (map[string]interface{}, error) {
 	toSerialize["styleOverrideTable"] = o.StyleOverrideTable
 	toSerialize["lineTypes"] = o.LineTypes
 	toSerialize["lineIndentations"] = o.LineIndentations
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -289,15 +294,26 @@ func (o *TypePropertiesTrait) UnmarshalJSON(data []byte) (err error) {
 
 	varTypePropertiesTrait := _TypePropertiesTrait{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varTypePropertiesTrait)
+	err = json.Unmarshal(data, &varTypePropertiesTrait)
 
 	if err != nil {
 		return err
 	}
 
 	*o = TypePropertiesTrait(varTypePropertiesTrait)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "characters")
+		delete(additionalProperties, "style")
+		delete(additionalProperties, "characterStyleOverrides")
+		delete(additionalProperties, "layoutVersion")
+		delete(additionalProperties, "styleOverrideTable")
+		delete(additionalProperties, "lineTypes")
+		delete(additionalProperties, "lineIndentations")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -32,7 +31,8 @@ type GradientPaint struct {
 	// This field contains three vectors, each of which are a position in normalized object space (normalized object space is if the top left corner of the bounding box of the object is (0, 0) and the bottom right is (1,1)). The first position corresponds to the start of the gradient (value 0 for the purposes of calculating gradient stops), the second position is the end of the gradient (value 1), and the third handle position determines the width of the gradient.
 	GradientHandlePositions []Vector `json:"gradientHandlePositions"`
 	// Positions of key points along the gradient axis with the colors anchored there. Colors along the gradient are interpolated smoothly between neighboring gradient stops.
-	GradientStops []ColorStop `json:"gradientStops"`
+	GradientStops        []ColorStop `json:"gradientStops"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _GradientPaint GradientPaint
@@ -246,6 +246,11 @@ func (o GradientPaint) ToMap() (map[string]interface{}, error) {
 	toSerialize["type"] = o.Type
 	toSerialize["gradientHandlePositions"] = o.GradientHandlePositions
 	toSerialize["gradientStops"] = o.GradientStops
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -276,15 +281,25 @@ func (o *GradientPaint) UnmarshalJSON(data []byte) (err error) {
 
 	varGradientPaint := _GradientPaint{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varGradientPaint)
+	err = json.Unmarshal(data, &varGradientPaint)
 
 	if err != nil {
 		return err
 	}
 
 	*o = GradientPaint(varGradientPaint)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "opacity")
+		delete(additionalProperties, "blendMode")
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "gradientHandlePositions")
+		delete(additionalProperties, "gradientStops")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

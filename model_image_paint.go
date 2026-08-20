@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -42,7 +41,8 @@ type ImagePaint struct {
 	// Image rotation, in degrees.
 	Rotation *float32 `json:"rotation,omitempty"`
 	// A reference to an animated GIF embedded in this node. To download the image using this reference, use the `GET file images` endpoint to retrieve the mapping from image references to image URLs.
-	GifRef *string `json:"gifRef,omitempty"`
+	GifRef               *string `json:"gifRef,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _ImagePaint ImagePaint
@@ -435,6 +435,11 @@ func (o ImagePaint) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.GifRef) {
 		toSerialize["gifRef"] = o.GifRef
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -465,15 +470,30 @@ func (o *ImagePaint) UnmarshalJSON(data []byte) (err error) {
 
 	varImagePaint := _ImagePaint{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varImagePaint)
+	err = json.Unmarshal(data, &varImagePaint)
 
 	if err != nil {
 		return err
 	}
 
 	*o = ImagePaint(varImagePaint)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "opacity")
+		delete(additionalProperties, "blendMode")
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "scaleMode")
+		delete(additionalProperties, "imageRef")
+		delete(additionalProperties, "imageTransform")
+		delete(additionalProperties, "scalingFactor")
+		delete(additionalProperties, "filters")
+		delete(additionalProperties, "rotation")
+		delete(additionalProperties, "gifRef")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

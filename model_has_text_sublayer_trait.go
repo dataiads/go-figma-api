@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -22,7 +21,8 @@ var _ MappedNullable = &HasTextSublayerTrait{}
 // HasTextSublayerTrait struct for HasTextSublayerTrait
 type HasTextSublayerTrait struct {
 	// Text contained within a text box.
-	Characters string `json:"characters"`
+	Characters           string `json:"characters"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _HasTextSublayerTrait HasTextSublayerTrait
@@ -80,6 +80,11 @@ func (o HasTextSublayerTrait) MarshalJSON() ([]byte, error) {
 func (o HasTextSublayerTrait) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["characters"] = o.Characters
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -107,15 +112,20 @@ func (o *HasTextSublayerTrait) UnmarshalJSON(data []byte) (err error) {
 
 	varHasTextSublayerTrait := _HasTextSublayerTrait{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varHasTextSublayerTrait)
+	err = json.Unmarshal(data, &varHasTextSublayerTrait)
 
 	if err != nil {
 		return err
 	}
 
 	*o = HasTextSublayerTrait(varHasTextSublayerTrait)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "characters")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

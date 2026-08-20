@@ -19,15 +19,18 @@ var _ MappedNullable = &TypeStyleAllOfBoundVariables{}
 
 // TypeStyleAllOfBoundVariables The variables bound to a particular field on this style
 type TypeStyleAllOfBoundVariables struct {
-	FontFamily       *VariableAlias `json:"fontFamily,omitempty"`
-	FontSize         *VariableAlias `json:"fontSize,omitempty"`
-	FontStyle        *VariableAlias `json:"fontStyle,omitempty"`
-	FontWeight       *VariableAlias `json:"fontWeight,omitempty"`
-	LetterSpacing    *VariableAlias `json:"letterSpacing,omitempty"`
-	LineHeight       *VariableAlias `json:"lineHeight,omitempty"`
-	ParagraphSpacing *VariableAlias `json:"paragraphSpacing,omitempty"`
-	ParagraphIndent  *VariableAlias `json:"paragraphIndent,omitempty"`
+	FontFamily           *VariableAlias `json:"fontFamily,omitempty"`
+	FontSize             *VariableAlias `json:"fontSize,omitempty"`
+	FontStyle            *VariableAlias `json:"fontStyle,omitempty"`
+	FontWeight           *VariableAlias `json:"fontWeight,omitempty"`
+	LetterSpacing        *VariableAlias `json:"letterSpacing,omitempty"`
+	LineHeight           *VariableAlias `json:"lineHeight,omitempty"`
+	ParagraphSpacing     *VariableAlias `json:"paragraphSpacing,omitempty"`
+	ParagraphIndent      *VariableAlias `json:"paragraphIndent,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _TypeStyleAllOfBoundVariables TypeStyleAllOfBoundVariables
 
 // NewTypeStyleAllOfBoundVariables instantiates a new TypeStyleAllOfBoundVariables object
 // This constructor will assign default values to properties that have it defined,
@@ -336,7 +339,40 @@ func (o TypeStyleAllOfBoundVariables) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ParagraphIndent) {
 		toSerialize["paragraphIndent"] = o.ParagraphIndent
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *TypeStyleAllOfBoundVariables) UnmarshalJSON(data []byte) (err error) {
+	varTypeStyleAllOfBoundVariables := _TypeStyleAllOfBoundVariables{}
+
+	err = json.Unmarshal(data, &varTypeStyleAllOfBoundVariables)
+
+	if err != nil {
+		return err
+	}
+
+	*o = TypeStyleAllOfBoundVariables(varTypeStyleAllOfBoundVariables)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "fontFamily")
+		delete(additionalProperties, "fontSize")
+		delete(additionalProperties, "fontStyle")
+		delete(additionalProperties, "fontWeight")
+		delete(additionalProperties, "letterSpacing")
+		delete(additionalProperties, "lineHeight")
+		delete(additionalProperties, "paragraphSpacing")
+		delete(additionalProperties, "paragraphIndent")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableTypeStyleAllOfBoundVariables struct {

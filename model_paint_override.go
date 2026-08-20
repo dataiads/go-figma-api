@@ -22,8 +22,11 @@ type PaintOverride struct {
 	// Paints applied to characters.
 	Fills []Paint `json:"fills,omitempty"`
 	// ID of style node, if any, that this inherits fill data from.
-	InheritFillStyleId *string `json:"inheritFillStyleId,omitempty"`
+	InheritFillStyleId   *string `json:"inheritFillStyleId,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _PaintOverride PaintOverride
 
 // NewPaintOverride instantiates a new PaintOverride object
 // This constructor will assign default values to properties that have it defined,
@@ -122,7 +125,34 @@ func (o PaintOverride) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.InheritFillStyleId) {
 		toSerialize["inheritFillStyleId"] = o.InheritFillStyleId
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *PaintOverride) UnmarshalJSON(data []byte) (err error) {
+	varPaintOverride := _PaintOverride{}
+
+	err = json.Unmarshal(data, &varPaintOverride)
+
+	if err != nil {
+		return err
+	}
+
+	*o = PaintOverride(varPaintOverride)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "fills")
+		delete(additionalProperties, "inheritFillStyleId")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullablePaintOverride struct {

@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -48,7 +47,8 @@ type EmbedNode struct {
 	// A mapping of variable collection ID to mode ID representing the explicitly set modes for this node.
 	ExplicitVariableModes map[string]string `json:"explicitVariableModes,omitempty"`
 	// An array of export settings representing images to export from the node.
-	ExportSettings []ExportSetting `json:"exportSettings,omitempty"`
+	ExportSettings       []ExportSetting `json:"exportSettings,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _EmbedNode EmbedNode
@@ -557,6 +557,11 @@ func (o EmbedNode) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ExportSettings) {
 		toSerialize["exportSettings"] = o.ExportSettings
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -587,15 +592,33 @@ func (o *EmbedNode) UnmarshalJSON(data []byte) (err error) {
 
 	varEmbedNode := _EmbedNode{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varEmbedNode)
+	err = json.Unmarshal(data, &varEmbedNode)
 
 	if err != nil {
 		return err
 	}
 
 	*o = EmbedNode(varEmbedNode)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "id")
+		delete(additionalProperties, "name")
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "locked")
+		delete(additionalProperties, "isFixed")
+		delete(additionalProperties, "scrollBehavior")
+		delete(additionalProperties, "rotation")
+		delete(additionalProperties, "componentPropertyReferences")
+		delete(additionalProperties, "pluginData")
+		delete(additionalProperties, "sharedPluginData")
+		delete(additionalProperties, "boundVariables")
+		delete(additionalProperties, "explicitVariableModes")
+		delete(additionalProperties, "exportSettings")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

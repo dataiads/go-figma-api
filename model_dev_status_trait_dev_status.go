@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -23,7 +22,8 @@ var _ MappedNullable = &DevStatusTraitDevStatus{}
 type DevStatusTraitDevStatus struct {
 	Type string `json:"type"`
 	// An optional field where the designer can add more information about the design and what has changed.
-	Description *string `json:"description,omitempty"`
+	Description          *string `json:"description,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _DevStatusTraitDevStatus DevStatusTraitDevStatus
@@ -116,6 +116,11 @@ func (o DevStatusTraitDevStatus) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Description) {
 		toSerialize["description"] = o.Description
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -143,15 +148,21 @@ func (o *DevStatusTraitDevStatus) UnmarshalJSON(data []byte) (err error) {
 
 	varDevStatusTraitDevStatus := _DevStatusTraitDevStatus{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varDevStatusTraitDevStatus)
+	err = json.Unmarshal(data, &varDevStatusTraitDevStatus)
 
 	if err != nil {
 		return err
 	}
 
 	*o = DevStatusTraitDevStatus(varDevStatusTraitDevStatus)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "description")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

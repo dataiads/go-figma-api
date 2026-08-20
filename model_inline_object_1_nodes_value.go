@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -29,7 +28,8 @@ type InlineObject1NodesValue struct {
 	// The version of the file schema that this file uses.
 	SchemaVersion float32 `json:"schemaVersion"`
 	// A mapping from style IDs to style metadata.
-	Styles map[string]Style `json:"styles"`
+	Styles               map[string]Style `json:"styles"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _InlineObject1NodesValue InlineObject1NodesValue
@@ -193,6 +193,11 @@ func (o InlineObject1NodesValue) ToMap() (map[string]interface{}, error) {
 	toSerialize["componentSets"] = o.ComponentSets
 	toSerialize["schemaVersion"] = o.SchemaVersion
 	toSerialize["styles"] = o.Styles
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -224,15 +229,24 @@ func (o *InlineObject1NodesValue) UnmarshalJSON(data []byte) (err error) {
 
 	varInlineObject1NodesValue := _InlineObject1NodesValue{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varInlineObject1NodesValue)
+	err = json.Unmarshal(data, &varInlineObject1NodesValue)
 
 	if err != nil {
 		return err
 	}
 
 	*o = InlineObject1NodesValue(varInlineObject1NodesValue)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "document")
+		delete(additionalProperties, "components")
+		delete(additionalProperties, "componentSets")
+		delete(additionalProperties, "schemaVersion")
+		delete(additionalProperties, "styles")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

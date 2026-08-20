@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -28,7 +27,8 @@ type StrokeWeights struct {
 	// The bottom stroke weight.
 	Bottom float32 `json:"bottom"`
 	// The left stroke weight.
-	Left float32 `json:"left"`
+	Left                 float32 `json:"left"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _StrokeWeights StrokeWeights
@@ -164,6 +164,11 @@ func (o StrokeWeights) ToMap() (map[string]interface{}, error) {
 	toSerialize["right"] = o.Right
 	toSerialize["bottom"] = o.Bottom
 	toSerialize["left"] = o.Left
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -194,15 +199,23 @@ func (o *StrokeWeights) UnmarshalJSON(data []byte) (err error) {
 
 	varStrokeWeights := _StrokeWeights{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varStrokeWeights)
+	err = json.Unmarshal(data, &varStrokeWeights)
 
 	if err != nil {
 		return err
 	}
 
 	*o = StrokeWeights(varStrokeWeights)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "top")
+		delete(additionalProperties, "right")
+		delete(additionalProperties, "bottom")
+		delete(additionalProperties, "left")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -22,7 +21,8 @@ var _ MappedNullable = &DocumentationLink{}
 // DocumentationLink Represents a link to documentation for a component or component set.
 type DocumentationLink struct {
 	// Should be a valid URI (e.g. https://www.figma.com).
-	Uri string `json:"uri"`
+	Uri                  string `json:"uri"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _DocumentationLink DocumentationLink
@@ -80,6 +80,11 @@ func (o DocumentationLink) MarshalJSON() ([]byte, error) {
 func (o DocumentationLink) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["uri"] = o.Uri
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -107,15 +112,20 @@ func (o *DocumentationLink) UnmarshalJSON(data []byte) (err error) {
 
 	varDocumentationLink := _DocumentationLink{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varDocumentationLink)
+	err = json.Unmarshal(data, &varDocumentationLink)
 
 	if err != nil {
 		return err
 	}
 
 	*o = DocumentationLink(varDocumentationLink)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "uri")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

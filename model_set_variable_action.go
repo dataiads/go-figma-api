@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -21,9 +20,10 @@ var _ MappedNullable = &SetVariableAction{}
 
 // SetVariableAction Sets a variable to a specific value.
 type SetVariableAction struct {
-	Type          string        `json:"type"`
-	VariableId    string        `json:"variableId"`
-	VariableValue *VariableData `json:"variableValue,omitempty"`
+	Type                 string        `json:"type"`
+	VariableId           string        `json:"variableId"`
+	VariableValue        *VariableData `json:"variableValue,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _SetVariableAction SetVariableAction
@@ -142,6 +142,11 @@ func (o SetVariableAction) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.VariableValue) {
 		toSerialize["variableValue"] = o.VariableValue
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -170,15 +175,22 @@ func (o *SetVariableAction) UnmarshalJSON(data []byte) (err error) {
 
 	varSetVariableAction := _SetVariableAction{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varSetVariableAction)
+	err = json.Unmarshal(data, &varSetVariableAction)
 
 	if err != nil {
 		return err
 	}
 
 	*o = SetVariableAction(varSetVariableAction)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "variableId")
+		delete(additionalProperties, "variableValue")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -25,6 +24,7 @@ type Easing struct {
 	Type                      EasingType                       `json:"type"`
 	EasingFunctionCubicBezier *EasingEasingFunctionCubicBezier `json:"easingFunctionCubicBezier,omitempty"`
 	EasingFunctionSpring      *EasingEasingFunctionSpring      `json:"easingFunctionSpring,omitempty"`
+	AdditionalProperties      map[string]interface{}
 }
 
 type _Easing Easing
@@ -152,6 +152,11 @@ func (o Easing) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.EasingFunctionSpring) {
 		toSerialize["easingFunctionSpring"] = o.EasingFunctionSpring
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -179,15 +184,22 @@ func (o *Easing) UnmarshalJSON(data []byte) (err error) {
 
 	varEasing := _Easing{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varEasing)
+	err = json.Unmarshal(data, &varEasing)
 
 	if err != nil {
 		return err
 	}
 
 	*o = Easing(varEasing)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "easingFunctionCubicBezier")
+		delete(additionalProperties, "easingFunctionSpring")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

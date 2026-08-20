@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -21,8 +20,9 @@ var _ MappedNullable = &ConditionalBlock{}
 
 // ConditionalBlock Either the if or else conditional blocks. The if block contains a condition to check. If that condition is met then it will run those list of actions, else it will run the actions in the else block.
 type ConditionalBlock struct {
-	Condition *VariableData `json:"condition,omitempty"`
-	Actions   []Action      `json:"actions"`
+	Condition            *VariableData `json:"condition,omitempty"`
+	Actions              []Action      `json:"actions"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _ConditionalBlock ConditionalBlock
@@ -115,6 +115,11 @@ func (o ConditionalBlock) ToMap() (map[string]interface{}, error) {
 		toSerialize["condition"] = o.Condition
 	}
 	toSerialize["actions"] = o.Actions
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -142,15 +147,21 @@ func (o *ConditionalBlock) UnmarshalJSON(data []byte) (err error) {
 
 	varConditionalBlock := _ConditionalBlock{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varConditionalBlock)
+	err = json.Unmarshal(data, &varConditionalBlock)
 
 	if err != nil {
 		return err
 	}
 
 	*o = ConditionalBlock(varConditionalBlock)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "condition")
+		delete(additionalProperties, "actions")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

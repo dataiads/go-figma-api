@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -132,6 +131,7 @@ type SectionNode struct {
 	DevStatus             *DevStatusTraitDevStatus `json:"devStatus,omitempty"`
 	// Whether the contents of the section are visible
 	SectionContentsHidden bool `json:"sectionContentsHidden"`
+	AdditionalProperties  map[string]interface{}
 }
 
 type _SectionNode SectionNode
@@ -2135,6 +2135,11 @@ func (o SectionNode) ToMap() (map[string]interface{}, error) {
 		toSerialize["devStatus"] = o.DevStatus
 	}
 	toSerialize["sectionContentsHidden"] = o.SectionContentsHidden
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -2170,15 +2175,75 @@ func (o *SectionNode) UnmarshalJSON(data []byte) (err error) {
 
 	varSectionNode := _SectionNode{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varSectionNode)
+	err = json.Unmarshal(data, &varSectionNode)
 
 	if err != nil {
 		return err
 	}
 
 	*o = SectionNode(varSectionNode)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "id")
+		delete(additionalProperties, "name")
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "locked")
+		delete(additionalProperties, "isFixed")
+		delete(additionalProperties, "scrollBehavior")
+		delete(additionalProperties, "rotation")
+		delete(additionalProperties, "componentPropertyReferences")
+		delete(additionalProperties, "pluginData")
+		delete(additionalProperties, "sharedPluginData")
+		delete(additionalProperties, "boundVariables")
+		delete(additionalProperties, "explicitVariableModes")
+		delete(additionalProperties, "fills")
+		delete(additionalProperties, "styles")
+		delete(additionalProperties, "strokes")
+		delete(additionalProperties, "strokeWeight")
+		delete(additionalProperties, "strokeAlign")
+		delete(additionalProperties, "strokeJoin")
+		delete(additionalProperties, "strokeDashes")
+		delete(additionalProperties, "fillOverrideTable")
+		delete(additionalProperties, "fillGeometry")
+		delete(additionalProperties, "strokeGeometry")
+		delete(additionalProperties, "vectorNetwork")
+		delete(additionalProperties, "strokeCap")
+		delete(additionalProperties, "strokeMiterAngle")
+		delete(additionalProperties, "children")
+		delete(additionalProperties, "absoluteBoundingBox")
+		delete(additionalProperties, "absoluteRenderBounds")
+		delete(additionalProperties, "preserveRatio")
+		delete(additionalProperties, "constraints")
+		delete(additionalProperties, "relativeTransform")
+		delete(additionalProperties, "size")
+		delete(additionalProperties, "layoutAlign")
+		delete(additionalProperties, "layoutGrow")
+		delete(additionalProperties, "layoutPositioning")
+		delete(additionalProperties, "minWidth")
+		delete(additionalProperties, "maxWidth")
+		delete(additionalProperties, "minHeight")
+		delete(additionalProperties, "maxHeight")
+		delete(additionalProperties, "layoutSizingHorizontal")
+		delete(additionalProperties, "layoutSizingVertical")
+		delete(additionalProperties, "gridRowCount")
+		delete(additionalProperties, "gridColumnCount")
+		delete(additionalProperties, "gridRowGap")
+		delete(additionalProperties, "gridColumnGap")
+		delete(additionalProperties, "gridColumnsSizing")
+		delete(additionalProperties, "gridRowsSizing")
+		delete(additionalProperties, "gridChildHorizontalAlign")
+		delete(additionalProperties, "gridChildVerticalAlign")
+		delete(additionalProperties, "gridRowSpan")
+		delete(additionalProperties, "gridColumnSpan")
+		delete(additionalProperties, "gridRowAnchorIndex")
+		delete(additionalProperties, "gridColumnAnchorIndex")
+		delete(additionalProperties, "devStatus")
+		delete(additionalProperties, "sectionContentsHidden")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

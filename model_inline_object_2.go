@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -24,7 +23,8 @@ type InlineObject2 struct {
 	// For successful requests, this value is always `null`.
 	Err interface{} `json:"err"`
 	// A map from node IDs to URLs of the rendered images.
-	Images map[string]string `json:"images"`
+	Images               map[string]string `json:"images"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _InlineObject2 InlineObject2
@@ -112,6 +112,11 @@ func (o InlineObject2) ToMap() (map[string]interface{}, error) {
 		toSerialize["err"] = o.Err
 	}
 	toSerialize["images"] = o.Images
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -140,15 +145,21 @@ func (o *InlineObject2) UnmarshalJSON(data []byte) (err error) {
 
 	varInlineObject2 := _InlineObject2{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varInlineObject2)
+	err = json.Unmarshal(data, &varInlineObject2)
 
 	if err != nil {
 		return err
 	}
 
 	*o = InlineObject2(varInlineObject2)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "err")
+		delete(additionalProperties, "images")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

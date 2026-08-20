@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -21,8 +20,9 @@ var _ MappedNullable = &OnMediaHitTrigger{}
 
 // OnMediaHitTrigger struct for OnMediaHitTrigger
 type OnMediaHitTrigger struct {
-	Type         string  `json:"type"`
-	MediaHitTime float32 `json:"mediaHitTime"`
+	Type                 string  `json:"type"`
+	MediaHitTime         float32 `json:"mediaHitTime"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _OnMediaHitTrigger OnMediaHitTrigger
@@ -106,6 +106,11 @@ func (o OnMediaHitTrigger) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["type"] = o.Type
 	toSerialize["mediaHitTime"] = o.MediaHitTime
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -134,15 +139,21 @@ func (o *OnMediaHitTrigger) UnmarshalJSON(data []byte) (err error) {
 
 	varOnMediaHitTrigger := _OnMediaHitTrigger{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varOnMediaHitTrigger)
+	err = json.Unmarshal(data, &varOnMediaHitTrigger)
 
 	if err != nil {
 		return err
 	}
 
 	*o = OnMediaHitTrigger(varOnMediaHitTrigger)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "mediaHitTime")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -152,7 +151,8 @@ type BooleanOperationNode struct {
 	TransitionEasing *EasingType   `json:"transitionEasing,omitempty"`
 	Interactions     []Interaction `json:"interactions,omitempty"`
 	// A string enum indicating the type of boolean operation applied.
-	BooleanOperation string `json:"booleanOperation"`
+	BooleanOperation     string `json:"booleanOperation"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _BooleanOperationNode BooleanOperationNode
@@ -2501,6 +2501,11 @@ func (o BooleanOperationNode) ToMap() (map[string]interface{}, error) {
 		toSerialize["interactions"] = o.Interactions
 	}
 	toSerialize["booleanOperation"] = o.BooleanOperation
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -2538,15 +2543,85 @@ func (o *BooleanOperationNode) UnmarshalJSON(data []byte) (err error) {
 
 	varBooleanOperationNode := _BooleanOperationNode{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varBooleanOperationNode)
+	err = json.Unmarshal(data, &varBooleanOperationNode)
 
 	if err != nil {
 		return err
 	}
 
 	*o = BooleanOperationNode(varBooleanOperationNode)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "id")
+		delete(additionalProperties, "name")
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "locked")
+		delete(additionalProperties, "isFixed")
+		delete(additionalProperties, "scrollBehavior")
+		delete(additionalProperties, "rotation")
+		delete(additionalProperties, "componentPropertyReferences")
+		delete(additionalProperties, "pluginData")
+		delete(additionalProperties, "sharedPluginData")
+		delete(additionalProperties, "boundVariables")
+		delete(additionalProperties, "explicitVariableModes")
+		delete(additionalProperties, "blendMode")
+		delete(additionalProperties, "opacity")
+		delete(additionalProperties, "children")
+		delete(additionalProperties, "absoluteBoundingBox")
+		delete(additionalProperties, "absoluteRenderBounds")
+		delete(additionalProperties, "preserveRatio")
+		delete(additionalProperties, "constraints")
+		delete(additionalProperties, "relativeTransform")
+		delete(additionalProperties, "size")
+		delete(additionalProperties, "layoutAlign")
+		delete(additionalProperties, "layoutGrow")
+		delete(additionalProperties, "layoutPositioning")
+		delete(additionalProperties, "minWidth")
+		delete(additionalProperties, "maxWidth")
+		delete(additionalProperties, "minHeight")
+		delete(additionalProperties, "maxHeight")
+		delete(additionalProperties, "layoutSizingHorizontal")
+		delete(additionalProperties, "layoutSizingVertical")
+		delete(additionalProperties, "gridRowCount")
+		delete(additionalProperties, "gridColumnCount")
+		delete(additionalProperties, "gridRowGap")
+		delete(additionalProperties, "gridColumnGap")
+		delete(additionalProperties, "gridColumnsSizing")
+		delete(additionalProperties, "gridRowsSizing")
+		delete(additionalProperties, "gridChildHorizontalAlign")
+		delete(additionalProperties, "gridChildVerticalAlign")
+		delete(additionalProperties, "gridRowSpan")
+		delete(additionalProperties, "gridColumnSpan")
+		delete(additionalProperties, "gridRowAnchorIndex")
+		delete(additionalProperties, "gridColumnAnchorIndex")
+		delete(additionalProperties, "fills")
+		delete(additionalProperties, "styles")
+		delete(additionalProperties, "strokes")
+		delete(additionalProperties, "strokeWeight")
+		delete(additionalProperties, "strokeAlign")
+		delete(additionalProperties, "strokeJoin")
+		delete(additionalProperties, "strokeDashes")
+		delete(additionalProperties, "fillOverrideTable")
+		delete(additionalProperties, "fillGeometry")
+		delete(additionalProperties, "strokeGeometry")
+		delete(additionalProperties, "vectorNetwork")
+		delete(additionalProperties, "strokeCap")
+		delete(additionalProperties, "strokeMiterAngle")
+		delete(additionalProperties, "exportSettings")
+		delete(additionalProperties, "effects")
+		delete(additionalProperties, "isMask")
+		delete(additionalProperties, "maskType")
+		delete(additionalProperties, "isMaskOutline")
+		delete(additionalProperties, "transitionNodeID")
+		delete(additionalProperties, "transitionDuration")
+		delete(additionalProperties, "transitionEasing")
+		delete(additionalProperties, "interactions")
+		delete(additionalProperties, "booleanOperation")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

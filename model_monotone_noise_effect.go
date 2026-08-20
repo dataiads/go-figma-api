@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -34,7 +33,8 @@ type MonotoneNoiseEffect struct {
 	// The density of the noise effect
 	Density float32 `json:"density"`
 	// The string literal 'MONOTONE' representing the noise type.
-	NoiseType string `json:"noiseType"`
+	NoiseType            string `json:"noiseType"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _MonotoneNoiseEffect MonotoneNoiseEffect
@@ -248,6 +248,11 @@ func (o MonotoneNoiseEffect) ToMap() (map[string]interface{}, error) {
 	toSerialize["noiseSize"] = o.NoiseSize
 	toSerialize["density"] = o.Density
 	toSerialize["noiseType"] = o.NoiseType
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -281,15 +286,26 @@ func (o *MonotoneNoiseEffect) UnmarshalJSON(data []byte) (err error) {
 
 	varMonotoneNoiseEffect := _MonotoneNoiseEffect{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varMonotoneNoiseEffect)
+	err = json.Unmarshal(data, &varMonotoneNoiseEffect)
 
 	if err != nil {
 		return err
 	}
 
 	*o = MonotoneNoiseEffect(varMonotoneNoiseEffect)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "color")
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "blendMode")
+		delete(additionalProperties, "noiseSize")
+		delete(additionalProperties, "density")
+		delete(additionalProperties, "noiseType")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

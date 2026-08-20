@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -35,7 +34,8 @@ type ProgressiveBlurEffect struct {
 	// The starting offset of the progressive blur
 	StartOffset Vector `json:"startOffset"`
 	// The ending offset of the progressive blur
-	EndOffset Vector `json:"endOffset"`
+	EndOffset            Vector `json:"endOffset"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _ProgressiveBlurEffect ProgressiveBlurEffect
@@ -284,6 +284,11 @@ func (o ProgressiveBlurEffect) ToMap() (map[string]interface{}, error) {
 	toSerialize["startRadius"] = o.StartRadius
 	toSerialize["startOffset"] = o.StartOffset
 	toSerialize["endOffset"] = o.EndOffset
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -317,15 +322,27 @@ func (o *ProgressiveBlurEffect) UnmarshalJSON(data []byte) (err error) {
 
 	varProgressiveBlurEffect := _ProgressiveBlurEffect{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varProgressiveBlurEffect)
+	err = json.Unmarshal(data, &varProgressiveBlurEffect)
 
 	if err != nil {
 		return err
 	}
 
 	*o = ProgressiveBlurEffect(varProgressiveBlurEffect)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "radius")
+		delete(additionalProperties, "boundVariables")
+		delete(additionalProperties, "blurType")
+		delete(additionalProperties, "startRadius")
+		delete(additionalProperties, "startOffset")
+		delete(additionalProperties, "endOffset")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

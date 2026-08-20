@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -21,9 +20,10 @@ var _ MappedNullable = &ExportSetting{}
 
 // ExportSetting An export setting.
 type ExportSetting struct {
-	Suffix     string     `json:"suffix"`
-	Format     string     `json:"format"`
-	Constraint Constraint `json:"constraint"`
+	Suffix               string     `json:"suffix"`
+	Format               string     `json:"format"`
+	Constraint           Constraint `json:"constraint"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _ExportSetting ExportSetting
@@ -133,6 +133,11 @@ func (o ExportSetting) ToMap() (map[string]interface{}, error) {
 	toSerialize["suffix"] = o.Suffix
 	toSerialize["format"] = o.Format
 	toSerialize["constraint"] = o.Constraint
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -162,15 +167,22 @@ func (o *ExportSetting) UnmarshalJSON(data []byte) (err error) {
 
 	varExportSetting := _ExportSetting{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varExportSetting)
+	err = json.Unmarshal(data, &varExportSetting)
 
 	if err != nil {
 		return err
 	}
 
 	*o = ExportSetting(varExportSetting)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "suffix")
+		delete(additionalProperties, "format")
+		delete(additionalProperties, "constraint")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

@@ -22,8 +22,11 @@ type ConnectorEndpointOneOf struct {
 	// Node ID that this endpoint attaches to.
 	EndpointNodeId *string `json:"endpointNodeId,omitempty"`
 	// The position of the endpoint relative to the node.
-	Position *Vector `json:"position,omitempty"`
+	Position             *Vector `json:"position,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ConnectorEndpointOneOf ConnectorEndpointOneOf
 
 // NewConnectorEndpointOneOf instantiates a new ConnectorEndpointOneOf object
 // This constructor will assign default values to properties that have it defined,
@@ -122,7 +125,34 @@ func (o ConnectorEndpointOneOf) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Position) {
 		toSerialize["position"] = o.Position
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ConnectorEndpointOneOf) UnmarshalJSON(data []byte) (err error) {
+	varConnectorEndpointOneOf := _ConnectorEndpointOneOf{}
+
+	err = json.Unmarshal(data, &varConnectorEndpointOneOf)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ConnectorEndpointOneOf(varConnectorEndpointOneOf)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "endpointNodeId")
+		delete(additionalProperties, "position")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableConnectorEndpointOneOf struct {

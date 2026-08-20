@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -21,9 +20,10 @@ var _ MappedNullable = &UpdateMediaRuntimeActionOneOf{}
 
 // UpdateMediaRuntimeActionOneOf An action that updates the runtime of a media node by playing, pausing, toggling play/pause, muting, unmuting, or toggling mute/unmute.  The `destinationId` is the node ID of the media node to update. If `destinationId` is `null`, the action will update the media node that contains the action.  The `mediaAction` is the action to perform on the media node.
 type UpdateMediaRuntimeActionOneOf struct {
-	Type          string `json:"type"`
-	DestinationId string `json:"destinationId"`
-	MediaAction   string `json:"mediaAction"`
+	Type                 string `json:"type"`
+	DestinationId        string `json:"destinationId"`
+	MediaAction          string `json:"mediaAction"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _UpdateMediaRuntimeActionOneOf UpdateMediaRuntimeActionOneOf
@@ -133,6 +133,11 @@ func (o UpdateMediaRuntimeActionOneOf) ToMap() (map[string]interface{}, error) {
 	toSerialize["type"] = o.Type
 	toSerialize["destinationId"] = o.DestinationId
 	toSerialize["mediaAction"] = o.MediaAction
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -162,15 +167,22 @@ func (o *UpdateMediaRuntimeActionOneOf) UnmarshalJSON(data []byte) (err error) {
 
 	varUpdateMediaRuntimeActionOneOf := _UpdateMediaRuntimeActionOneOf{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varUpdateMediaRuntimeActionOneOf)
+	err = json.Unmarshal(data, &varUpdateMediaRuntimeActionOneOf)
 
 	if err != nil {
 		return err
 	}
 
 	*o = UpdateMediaRuntimeActionOneOf(varUpdateMediaRuntimeActionOneOf)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "destinationId")
+		delete(additionalProperties, "mediaAction")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

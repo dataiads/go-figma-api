@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -24,7 +23,8 @@ type Size struct {
 	// The width of a size.
 	Width float32 `json:"width"`
 	// the height of a size.
-	Height float32 `json:"height"`
+	Height               float32 `json:"height"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _Size Size
@@ -108,6 +108,11 @@ func (o Size) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["width"] = o.Width
 	toSerialize["height"] = o.Height
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -136,15 +141,21 @@ func (o *Size) UnmarshalJSON(data []byte) (err error) {
 
 	varSize := _Size{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varSize)
+	err = json.Unmarshal(data, &varSize)
 
 	if err != nil {
 		return err
 	}
 
 	*o = Size(varSize)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "width")
+		delete(additionalProperties, "height")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

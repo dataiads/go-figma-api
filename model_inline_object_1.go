@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -37,7 +36,8 @@ type InlineObject1 struct {
 	// The share permission level of the file link.
 	LinkAccess *string `json:"linkAccess,omitempty"`
 	// A mapping from node IDs to node metadata.
-	Nodes map[string]InlineObject1NodesValue `json:"nodes"`
+	Nodes                map[string]InlineObject1NodesValue `json:"nodes"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _InlineObject1 InlineObject1
@@ -286,6 +286,11 @@ func (o InlineObject1) ToMap() (map[string]interface{}, error) {
 		toSerialize["linkAccess"] = o.LinkAccess
 	}
 	toSerialize["nodes"] = o.Nodes
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -319,15 +324,27 @@ func (o *InlineObject1) UnmarshalJSON(data []byte) (err error) {
 
 	varInlineObject1 := _InlineObject1{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varInlineObject1)
+	err = json.Unmarshal(data, &varInlineObject1)
 
 	if err != nil {
 		return err
 	}
 
 	*o = InlineObject1(varInlineObject1)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "name")
+		delete(additionalProperties, "role")
+		delete(additionalProperties, "lastModified")
+		delete(additionalProperties, "editorType")
+		delete(additionalProperties, "thumbnailUrl")
+		delete(additionalProperties, "version")
+		delete(additionalProperties, "linkAccess")
+		delete(additionalProperties, "nodes")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

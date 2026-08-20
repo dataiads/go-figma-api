@@ -21,7 +21,10 @@ var _ MappedNullable = &ComponentPropertiesTrait{}
 type ComponentPropertiesTrait struct {
 	// A mapping of name to `ComponentPropertyDefinition` for every component property on this component. Each property has a type, defaultValue, and other optional values.
 	ComponentPropertyDefinitions map[string]ComponentPropertyDefinition `json:"componentPropertyDefinitions,omitempty"`
+	AdditionalProperties         map[string]interface{}
 }
+
+type _ComponentPropertiesTrait ComponentPropertiesTrait
 
 // NewComponentPropertiesTrait instantiates a new ComponentPropertiesTrait object
 // This constructor will assign default values to properties that have it defined,
@@ -85,7 +88,33 @@ func (o ComponentPropertiesTrait) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ComponentPropertyDefinitions) {
 		toSerialize["componentPropertyDefinitions"] = o.ComponentPropertyDefinitions
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ComponentPropertiesTrait) UnmarshalJSON(data []byte) (err error) {
+	varComponentPropertiesTrait := _ComponentPropertiesTrait{}
+
+	err = json.Unmarshal(data, &varComponentPropertiesTrait)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ComponentPropertiesTrait(varComponentPropertiesTrait)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "componentPropertyDefinitions")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableComponentPropertiesTrait struct {

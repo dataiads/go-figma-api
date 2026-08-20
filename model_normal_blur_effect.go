@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -29,7 +28,8 @@ type NormalBlurEffect struct {
 	Radius         float32                       `json:"radius"`
 	BoundVariables *BaseBlurEffectBoundVariables `json:"boundVariables,omitempty"`
 	// The string literal 'NORMAL' representing the blur type. Always check the blurType before reading other properties.
-	BlurType *string `json:"blurType,omitempty"`
+	BlurType             *string `json:"blurType,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _NormalBlurEffect NormalBlurEffect
@@ -209,6 +209,11 @@ func (o NormalBlurEffect) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.BlurType) {
 		toSerialize["blurType"] = o.BlurType
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -238,15 +243,24 @@ func (o *NormalBlurEffect) UnmarshalJSON(data []byte) (err error) {
 
 	varNormalBlurEffect := _NormalBlurEffect{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varNormalBlurEffect)
+	err = json.Unmarshal(data, &varNormalBlurEffect)
 
 	if err != nil {
 		return err
 	}
 
 	*o = NormalBlurEffect(varNormalBlurEffect)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "radius")
+		delete(additionalProperties, "boundVariables")
+		delete(additionalProperties, "blurType")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

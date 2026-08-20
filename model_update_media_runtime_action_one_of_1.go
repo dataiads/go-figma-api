@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -21,10 +20,11 @@ var _ MappedNullable = &UpdateMediaRuntimeActionOneOf1{}
 
 // UpdateMediaRuntimeActionOneOf1 An action that updates the runtime of a media node by skipping forward or backward.  The `destinationId` is the node ID of the media node to update. If `destinationId` is `null`, the action will update the media node that contains the action.  The `mediaAction` is the action to perform on the media node.  The `amountToSkip` is the amount of time to skip in seconds.
 type UpdateMediaRuntimeActionOneOf1 struct {
-	Type          string  `json:"type"`
-	DestinationId *string `json:"destinationId,omitempty"`
-	MediaAction   string  `json:"mediaAction"`
-	AmountToSkip  float32 `json:"amountToSkip"`
+	Type                 string  `json:"type"`
+	DestinationId        *string `json:"destinationId,omitempty"`
+	MediaAction          string  `json:"mediaAction"`
+	AmountToSkip         float32 `json:"amountToSkip"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _UpdateMediaRuntimeActionOneOf1 UpdateMediaRuntimeActionOneOf1
@@ -169,6 +169,11 @@ func (o UpdateMediaRuntimeActionOneOf1) ToMap() (map[string]interface{}, error) 
 	}
 	toSerialize["mediaAction"] = o.MediaAction
 	toSerialize["amountToSkip"] = o.AmountToSkip
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -198,15 +203,23 @@ func (o *UpdateMediaRuntimeActionOneOf1) UnmarshalJSON(data []byte) (err error) 
 
 	varUpdateMediaRuntimeActionOneOf1 := _UpdateMediaRuntimeActionOneOf1{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varUpdateMediaRuntimeActionOneOf1)
+	err = json.Unmarshal(data, &varUpdateMediaRuntimeActionOneOf1)
 
 	if err != nil {
 		return err
 	}
 
 	*o = UpdateMediaRuntimeActionOneOf1(varUpdateMediaRuntimeActionOneOf1)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "destinationId")
+		delete(additionalProperties, "mediaAction")
+		delete(additionalProperties, "amountToSkip")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

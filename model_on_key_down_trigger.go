@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -21,9 +20,10 @@ var _ MappedNullable = &OnKeyDownTrigger{}
 
 // OnKeyDownTrigger struct for OnKeyDownTrigger
 type OnKeyDownTrigger struct {
-	Type     string    `json:"type"`
-	Device   string    `json:"device"`
-	KeyCodes []float32 `json:"keyCodes"`
+	Type                 string    `json:"type"`
+	Device               string    `json:"device"`
+	KeyCodes             []float32 `json:"keyCodes"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _OnKeyDownTrigger OnKeyDownTrigger
@@ -133,6 +133,11 @@ func (o OnKeyDownTrigger) ToMap() (map[string]interface{}, error) {
 	toSerialize["type"] = o.Type
 	toSerialize["device"] = o.Device
 	toSerialize["keyCodes"] = o.KeyCodes
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -162,15 +167,22 @@ func (o *OnKeyDownTrigger) UnmarshalJSON(data []byte) (err error) {
 
 	varOnKeyDownTrigger := _OnKeyDownTrigger{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varOnKeyDownTrigger)
+	err = json.Unmarshal(data, &varOnKeyDownTrigger)
 
 	if err != nil {
 		return err
 	}
 
 	*o = OnKeyDownTrigger(varOnKeyDownTrigger)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "device")
+		delete(additionalProperties, "keyCodes")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

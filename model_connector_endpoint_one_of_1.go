@@ -22,8 +22,11 @@ type ConnectorEndpointOneOf1 struct {
 	// Node ID that this endpoint attaches to.
 	EndpointNodeId *string `json:"endpointNodeId,omitempty"`
 	// The magnet type is a string enum.
-	Magnet *string `json:"magnet,omitempty"`
+	Magnet               *string `json:"magnet,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _ConnectorEndpointOneOf1 ConnectorEndpointOneOf1
 
 // NewConnectorEndpointOneOf1 instantiates a new ConnectorEndpointOneOf1 object
 // This constructor will assign default values to properties that have it defined,
@@ -122,7 +125,34 @@ func (o ConnectorEndpointOneOf1) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Magnet) {
 		toSerialize["magnet"] = o.Magnet
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *ConnectorEndpointOneOf1) UnmarshalJSON(data []byte) (err error) {
+	varConnectorEndpointOneOf1 := _ConnectorEndpointOneOf1{}
+
+	err = json.Unmarshal(data, &varConnectorEndpointOneOf1)
+
+	if err != nil {
+		return err
+	}
+
+	*o = ConnectorEndpointOneOf1(varConnectorEndpointOneOf1)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "endpointNodeId")
+		delete(additionalProperties, "magnet")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableConnectorEndpointOneOf1 struct {

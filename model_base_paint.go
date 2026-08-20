@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -26,7 +25,8 @@ type BasePaint struct {
 	// Overall opacity of paint (colors within the paint can also have opacity values which would blend with this)
 	Opacity *float32 `json:"opacity,omitempty"`
 	// How this node blends with nodes behind it in the scene
-	BlendMode BlendMode `json:"blendMode"`
+	BlendMode            BlendMode `json:"blendMode"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _BasePaint BasePaint
@@ -162,6 +162,11 @@ func (o BasePaint) ToMap() (map[string]interface{}, error) {
 		toSerialize["opacity"] = o.Opacity
 	}
 	toSerialize["blendMode"] = o.BlendMode
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -189,15 +194,22 @@ func (o *BasePaint) UnmarshalJSON(data []byte) (err error) {
 
 	varBasePaint := _BasePaint{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varBasePaint)
+	err = json.Unmarshal(data, &varBasePaint)
 
 	if err != nil {
 		return err
 	}
 
 	*o = BasePaint(varBasePaint)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "opacity")
+		delete(additionalProperties, "blendMode")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

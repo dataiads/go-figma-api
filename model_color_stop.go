@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -24,8 +23,9 @@ type ColorStop struct {
 	// Value between 0 and 1 representing position along gradient axis.
 	Position float32 `json:"position"`
 	// Color attached to corresponding position.
-	Color          RGBA                     `json:"color"`
-	BoundVariables *ColorStopBoundVariables `json:"boundVariables,omitempty"`
+	Color                RGBA                     `json:"color"`
+	BoundVariables       *ColorStopBoundVariables `json:"boundVariables,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _ColorStop ColorStop
@@ -144,6 +144,11 @@ func (o ColorStop) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.BoundVariables) {
 		toSerialize["boundVariables"] = o.BoundVariables
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -172,15 +177,22 @@ func (o *ColorStop) UnmarshalJSON(data []byte) (err error) {
 
 	varColorStop := _ColorStop{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varColorStop)
+	err = json.Unmarshal(data, &varColorStop)
 
 	if err != nil {
 		return err
 	}
 
 	*o = ColorStop(varColorStop)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "position")
+		delete(additionalProperties, "color")
+		delete(additionalProperties, "boundVariables")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

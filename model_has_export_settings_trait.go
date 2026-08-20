@@ -20,8 +20,11 @@ var _ MappedNullable = &HasExportSettingsTrait{}
 // HasExportSettingsTrait struct for HasExportSettingsTrait
 type HasExportSettingsTrait struct {
 	// An array of export settings representing images to export from the node.
-	ExportSettings []ExportSetting `json:"exportSettings,omitempty"`
+	ExportSettings       []ExportSetting `json:"exportSettings,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _HasExportSettingsTrait HasExportSettingsTrait
 
 // NewHasExportSettingsTrait instantiates a new HasExportSettingsTrait object
 // This constructor will assign default values to properties that have it defined,
@@ -85,7 +88,33 @@ func (o HasExportSettingsTrait) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ExportSettings) {
 		toSerialize["exportSettings"] = o.ExportSettings
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *HasExportSettingsTrait) UnmarshalJSON(data []byte) (err error) {
+	varHasExportSettingsTrait := _HasExportSettingsTrait{}
+
+	err = json.Unmarshal(data, &varHasExportSettingsTrait)
+
+	if err != nil {
+		return err
+	}
+
+	*o = HasExportSettingsTrait(varHasExportSettingsTrait)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "exportSettings")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableHasExportSettingsTrait struct {

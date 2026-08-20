@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -23,7 +22,8 @@ var _ MappedNullable = &VariableAlias{}
 type VariableAlias struct {
 	Type string `json:"type"`
 	// The id of the variable that the current variable is aliased to. This variable can be a local or remote variable, and both can be retrieved via the GET /v1/files/:file_key/variables/local endpoint.
-	Id string `json:"id"`
+	Id                   string `json:"id"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _VariableAlias VariableAlias
@@ -107,6 +107,11 @@ func (o VariableAlias) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["type"] = o.Type
 	toSerialize["id"] = o.Id
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -135,15 +140,21 @@ func (o *VariableAlias) UnmarshalJSON(data []byte) (err error) {
 
 	varVariableAlias := _VariableAlias{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varVariableAlias)
+	err = json.Unmarshal(data, &varVariableAlias)
 
 	if err != nil {
 		return err
 	}
 
 	*o = VariableAlias(varVariableAlias)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "id")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

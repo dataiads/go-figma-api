@@ -19,10 +19,13 @@ var _ MappedNullable = &VariableData{}
 
 // VariableData A value to set a variable to during prototyping.
 type VariableData struct {
-	Type         *VariableDataType         `json:"type,omitempty"`
-	ResolvedType *VariableResolvedDataType `json:"resolvedType,omitempty"`
-	Value        *VariableDataValue        `json:"value,omitempty"`
+	Type                 *VariableDataType         `json:"type,omitempty"`
+	ResolvedType         *VariableResolvedDataType `json:"resolvedType,omitempty"`
+	Value                *VariableDataValue        `json:"value,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _VariableData VariableData
 
 // NewVariableData instantiates a new VariableData object
 // This constructor will assign default values to properties that have it defined,
@@ -156,7 +159,35 @@ func (o VariableData) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Value) {
 		toSerialize["value"] = o.Value
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *VariableData) UnmarshalJSON(data []byte) (err error) {
+	varVariableData := _VariableData{}
+
+	err = json.Unmarshal(data, &varVariableData)
+
+	if err != nil {
+		return err
+	}
+
+	*o = VariableData(varVariableData)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "resolvedType")
+		delete(additionalProperties, "value")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableVariableData struct {

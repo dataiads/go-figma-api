@@ -23,7 +23,10 @@ type IsLayerTraitBoundVariablesRectangleCornerRadii struct {
 	RECTANGLE_TOP_RIGHT_CORNER_RADIUS    *VariableAlias `json:"RECTANGLE_TOP_RIGHT_CORNER_RADIUS,omitempty"`
 	RECTANGLE_BOTTOM_LEFT_CORNER_RADIUS  *VariableAlias `json:"RECTANGLE_BOTTOM_LEFT_CORNER_RADIUS,omitempty"`
 	RECTANGLE_BOTTOM_RIGHT_CORNER_RADIUS *VariableAlias `json:"RECTANGLE_BOTTOM_RIGHT_CORNER_RADIUS,omitempty"`
+	AdditionalProperties                 map[string]interface{}
 }
+
+type _IsLayerTraitBoundVariablesRectangleCornerRadii IsLayerTraitBoundVariablesRectangleCornerRadii
 
 // NewIsLayerTraitBoundVariablesRectangleCornerRadii instantiates a new IsLayerTraitBoundVariablesRectangleCornerRadii object
 // This constructor will assign default values to properties that have it defined,
@@ -192,7 +195,36 @@ func (o IsLayerTraitBoundVariablesRectangleCornerRadii) ToMap() (map[string]inte
 	if !IsNil(o.RECTANGLE_BOTTOM_RIGHT_CORNER_RADIUS) {
 		toSerialize["RECTANGLE_BOTTOM_RIGHT_CORNER_RADIUS"] = o.RECTANGLE_BOTTOM_RIGHT_CORNER_RADIUS
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *IsLayerTraitBoundVariablesRectangleCornerRadii) UnmarshalJSON(data []byte) (err error) {
+	varIsLayerTraitBoundVariablesRectangleCornerRadii := _IsLayerTraitBoundVariablesRectangleCornerRadii{}
+
+	err = json.Unmarshal(data, &varIsLayerTraitBoundVariablesRectangleCornerRadii)
+
+	if err != nil {
+		return err
+	}
+
+	*o = IsLayerTraitBoundVariablesRectangleCornerRadii(varIsLayerTraitBoundVariablesRectangleCornerRadii)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "RECTANGLE_TOP_LEFT_CORNER_RADIUS")
+		delete(additionalProperties, "RECTANGLE_TOP_RIGHT_CORNER_RADIUS")
+		delete(additionalProperties, "RECTANGLE_BOTTOM_LEFT_CORNER_RADIUS")
+		delete(additionalProperties, "RECTANGLE_BOTTOM_RIGHT_CORNER_RADIUS")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableIsLayerTraitBoundVariablesRectangleCornerRadii struct {

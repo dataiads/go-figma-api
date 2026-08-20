@@ -48,8 +48,11 @@ type BaseTypeStyle struct {
 	// Indicates how the font weight was overridden when there is a text style override.
 	SemanticWeight *string `json:"semanticWeight,omitempty"`
 	// Indicates how the font style was overridden when there is a text style override.
-	SemanticItalic *string `json:"semanticItalic,omitempty"`
+	SemanticItalic       *string `json:"semanticItalic,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _BaseTypeStyle BaseTypeStyle
 
 // NewBaseTypeStyle instantiates a new BaseTypeStyle object
 // This constructor will assign default values to properties that have it defined,
@@ -607,7 +610,47 @@ func (o BaseTypeStyle) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.SemanticItalic) {
 		toSerialize["semanticItalic"] = o.SemanticItalic
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *BaseTypeStyle) UnmarshalJSON(data []byte) (err error) {
+	varBaseTypeStyle := _BaseTypeStyle{}
+
+	err = json.Unmarshal(data, &varBaseTypeStyle)
+
+	if err != nil {
+		return err
+	}
+
+	*o = BaseTypeStyle(varBaseTypeStyle)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "fontFamily")
+		delete(additionalProperties, "fontPostScriptName")
+		delete(additionalProperties, "fontStyle")
+		delete(additionalProperties, "italic")
+		delete(additionalProperties, "fontWeight")
+		delete(additionalProperties, "fontSize")
+		delete(additionalProperties, "textCase")
+		delete(additionalProperties, "textAlignHorizontal")
+		delete(additionalProperties, "textAlignVertical")
+		delete(additionalProperties, "letterSpacing")
+		delete(additionalProperties, "fills")
+		delete(additionalProperties, "hyperlink")
+		delete(additionalProperties, "opentypeFlags")
+		delete(additionalProperties, "semanticWeight")
+		delete(additionalProperties, "semanticItalic")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableBaseTypeStyle struct {

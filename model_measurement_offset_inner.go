@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -21,8 +20,9 @@ var _ MappedNullable = &MeasurementOffsetInner{}
 
 // MeasurementOffsetInner Measurement offset relative to the inside of the start node
 type MeasurementOffsetInner struct {
-	Type     string  `json:"type"`
-	Relative float32 `json:"relative"`
+	Type                 string  `json:"type"`
+	Relative             float32 `json:"relative"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _MeasurementOffsetInner MeasurementOffsetInner
@@ -106,6 +106,11 @@ func (o MeasurementOffsetInner) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["type"] = o.Type
 	toSerialize["relative"] = o.Relative
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -134,15 +139,21 @@ func (o *MeasurementOffsetInner) UnmarshalJSON(data []byte) (err error) {
 
 	varMeasurementOffsetInner := _MeasurementOffsetInner{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varMeasurementOffsetInner)
+	err = json.Unmarshal(data, &varMeasurementOffsetInner)
 
 	if err != nil {
 		return err
 	}
 
 	*o = MeasurementOffsetInner(varMeasurementOffsetInner)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "relative")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

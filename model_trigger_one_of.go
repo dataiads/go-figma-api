@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -21,7 +20,8 @@ var _ MappedNullable = &TriggerOneOf{}
 
 // TriggerOneOf struct for TriggerOneOf
 type TriggerOneOf struct {
-	Type string `json:"type"`
+	Type                 string `json:"type"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _TriggerOneOf TriggerOneOf
@@ -79,6 +79,11 @@ func (o TriggerOneOf) MarshalJSON() ([]byte, error) {
 func (o TriggerOneOf) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	toSerialize["type"] = o.Type
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -106,15 +111,20 @@ func (o *TriggerOneOf) UnmarshalJSON(data []byte) (err error) {
 
 	varTriggerOneOf := _TriggerOneOf{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varTriggerOneOf)
+	err = json.Unmarshal(data, &varTriggerOneOf)
 
 	if err != nil {
 		return err
 	}
 
 	*o = TriggerOneOf(varTriggerOneOf)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

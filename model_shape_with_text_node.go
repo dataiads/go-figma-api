@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -139,7 +138,8 @@ type ShapeWithTextNode struct {
 	// An array of floating point numbers describing the pattern of dash length and gap lengths that the vector stroke will use when drawn.  For example a value of [1, 2] indicates that the stroke will be drawn with a dash of length 1 followed by a gap of length 2, repeated.
 	StrokeDashes []float32 `json:"strokeDashes,omitempty"`
 	// Geometric shape type. Most shape types have the same name as their tooltip but there are a few exceptions. ENG_DATABASE: Cylinder, ENG_QUEUE: Horizontal cylinder, ENG_FILE: File, ENG_FOLDER: Folder.
-	ShapeType ShapeType `json:"shapeType"`
+	ShapeType            ShapeType `json:"shapeType"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _ShapeWithTextNode ShapeWithTextNode
@@ -2239,6 +2239,11 @@ func (o ShapeWithTextNode) ToMap() (map[string]interface{}, error) {
 		toSerialize["strokeDashes"] = o.StrokeDashes
 	}
 	toSerialize["shapeType"] = o.ShapeType
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -2276,15 +2281,78 @@ func (o *ShapeWithTextNode) UnmarshalJSON(data []byte) (err error) {
 
 	varShapeWithTextNode := _ShapeWithTextNode{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varShapeWithTextNode)
+	err = json.Unmarshal(data, &varShapeWithTextNode)
 
 	if err != nil {
 		return err
 	}
 
 	*o = ShapeWithTextNode(varShapeWithTextNode)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "id")
+		delete(additionalProperties, "name")
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "locked")
+		delete(additionalProperties, "isFixed")
+		delete(additionalProperties, "scrollBehavior")
+		delete(additionalProperties, "rotation")
+		delete(additionalProperties, "componentPropertyReferences")
+		delete(additionalProperties, "pluginData")
+		delete(additionalProperties, "sharedPluginData")
+		delete(additionalProperties, "boundVariables")
+		delete(additionalProperties, "explicitVariableModes")
+		delete(additionalProperties, "absoluteBoundingBox")
+		delete(additionalProperties, "absoluteRenderBounds")
+		delete(additionalProperties, "preserveRatio")
+		delete(additionalProperties, "constraints")
+		delete(additionalProperties, "relativeTransform")
+		delete(additionalProperties, "size")
+		delete(additionalProperties, "layoutAlign")
+		delete(additionalProperties, "layoutGrow")
+		delete(additionalProperties, "layoutPositioning")
+		delete(additionalProperties, "minWidth")
+		delete(additionalProperties, "maxWidth")
+		delete(additionalProperties, "minHeight")
+		delete(additionalProperties, "maxHeight")
+		delete(additionalProperties, "layoutSizingHorizontal")
+		delete(additionalProperties, "layoutSizingVertical")
+		delete(additionalProperties, "gridRowCount")
+		delete(additionalProperties, "gridColumnCount")
+		delete(additionalProperties, "gridRowGap")
+		delete(additionalProperties, "gridColumnGap")
+		delete(additionalProperties, "gridColumnsSizing")
+		delete(additionalProperties, "gridRowsSizing")
+		delete(additionalProperties, "gridChildHorizontalAlign")
+		delete(additionalProperties, "gridChildVerticalAlign")
+		delete(additionalProperties, "gridRowSpan")
+		delete(additionalProperties, "gridColumnSpan")
+		delete(additionalProperties, "gridRowAnchorIndex")
+		delete(additionalProperties, "gridColumnAnchorIndex")
+		delete(additionalProperties, "blendMode")
+		delete(additionalProperties, "opacity")
+		delete(additionalProperties, "fills")
+		delete(additionalProperties, "styles")
+		delete(additionalProperties, "isMask")
+		delete(additionalProperties, "maskType")
+		delete(additionalProperties, "isMaskOutline")
+		delete(additionalProperties, "effects")
+		delete(additionalProperties, "exportSettings")
+		delete(additionalProperties, "characters")
+		delete(additionalProperties, "cornerRadius")
+		delete(additionalProperties, "cornerSmoothing")
+		delete(additionalProperties, "rectangleCornerRadii")
+		delete(additionalProperties, "strokes")
+		delete(additionalProperties, "strokeWeight")
+		delete(additionalProperties, "strokeAlign")
+		delete(additionalProperties, "strokeJoin")
+		delete(additionalProperties, "strokeDashes")
+		delete(additionalProperties, "shapeType")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

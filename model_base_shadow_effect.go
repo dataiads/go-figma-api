@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -32,8 +31,9 @@ type BaseShadowEffect struct {
 	// The distance by which to expand (or contract) the shadow.  For drop shadows, a positive `spread` value creates a shadow larger than the node, whereas a negative value creates a shadow smaller than the node.  For inner shadows, a positive `spread` value contracts the shadow. Spread values are only accepted on rectangles and ellipses, or on frames, components, and instances with visible fill paints and `clipsContent` enabled. When left unspecified, the default value is 0.
 	Spread *float32 `json:"spread,omitempty"`
 	// Whether this shadow is visible.
-	Visible        bool                            `json:"visible"`
-	BoundVariables *BaseShadowEffectBoundVariables `json:"boundVariables,omitempty"`
+	Visible              bool                            `json:"visible"`
+	BoundVariables       *BaseShadowEffectBoundVariables `json:"boundVariables,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _BaseShadowEffect BaseShadowEffect
@@ -269,6 +269,11 @@ func (o BaseShadowEffect) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.BoundVariables) {
 		toSerialize["boundVariables"] = o.BoundVariables
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -300,15 +305,26 @@ func (o *BaseShadowEffect) UnmarshalJSON(data []byte) (err error) {
 
 	varBaseShadowEffect := _BaseShadowEffect{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varBaseShadowEffect)
+	err = json.Unmarshal(data, &varBaseShadowEffect)
 
 	if err != nil {
 		return err
 	}
 
 	*o = BaseShadowEffect(varBaseShadowEffect)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "color")
+		delete(additionalProperties, "blendMode")
+		delete(additionalProperties, "offset")
+		delete(additionalProperties, "radius")
+		delete(additionalProperties, "spread")
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "boundVariables")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

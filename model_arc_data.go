@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -26,7 +25,8 @@ type ArcData struct {
 	// End of the sweep in radians.
 	EndingAngle float32 `json:"endingAngle"`
 	// Inner radius value between 0 and 1
-	InnerRadius float32 `json:"innerRadius"`
+	InnerRadius          float32 `json:"innerRadius"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _ArcData ArcData
@@ -142,6 +142,11 @@ func (o ArcData) ToMap() (map[string]interface{}, error) {
 	toSerialize["startingAngle"] = o.StartingAngle
 	toSerialize["endingAngle"] = o.EndingAngle
 	toSerialize["innerRadius"] = o.InnerRadius
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -171,15 +176,22 @@ func (o *ArcData) UnmarshalJSON(data []byte) (err error) {
 
 	varArcData := _ArcData{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varArcData)
+	err = json.Unmarshal(data, &varArcData)
 
 	if err != nil {
 		return err
 	}
 
 	*o = ArcData(varArcData)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "startingAngle")
+		delete(additionalProperties, "endingAngle")
+		delete(additionalProperties, "innerRadius")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }

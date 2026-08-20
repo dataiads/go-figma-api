@@ -11,7 +11,6 @@ API version: 0.42.0
 package figma
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 )
@@ -61,6 +60,7 @@ type CanvasNode struct {
 	// The background color of the prototype (currently only supports a single solid color paint).
 	PrototypeBackgrounds []RGBA        `json:"prototypeBackgrounds,omitempty"`
 	Measurements         []Measurement `json:"measurements,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
 
 type _CanvasNode CanvasNode
@@ -772,6 +772,11 @@ func (o CanvasNode) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Measurements) {
 		toSerialize["measurements"] = o.Measurements
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
 }
 
@@ -807,15 +812,40 @@ func (o *CanvasNode) UnmarshalJSON(data []byte) (err error) {
 
 	varCanvasNode := _CanvasNode{}
 
-	decoder := json.NewDecoder(bytes.NewReader(data))
-	decoder.DisallowUnknownFields()
-	err = decoder.Decode(&varCanvasNode)
+	err = json.Unmarshal(data, &varCanvasNode)
 
 	if err != nil {
 		return err
 	}
 
 	*o = CanvasNode(varCanvasNode)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "id")
+		delete(additionalProperties, "name")
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "visible")
+		delete(additionalProperties, "locked")
+		delete(additionalProperties, "isFixed")
+		delete(additionalProperties, "scrollBehavior")
+		delete(additionalProperties, "rotation")
+		delete(additionalProperties, "componentPropertyReferences")
+		delete(additionalProperties, "pluginData")
+		delete(additionalProperties, "sharedPluginData")
+		delete(additionalProperties, "boundVariables")
+		delete(additionalProperties, "explicitVariableModes")
+		delete(additionalProperties, "exportSettings")
+		delete(additionalProperties, "children")
+		delete(additionalProperties, "backgroundColor")
+		delete(additionalProperties, "prototypeStartNodeID")
+		delete(additionalProperties, "flowStartingPoints")
+		delete(additionalProperties, "prototypeDevice")
+		delete(additionalProperties, "prototypeBackgrounds")
+		delete(additionalProperties, "measurements")
+		o.AdditionalProperties = additionalProperties
+	}
 
 	return err
 }
